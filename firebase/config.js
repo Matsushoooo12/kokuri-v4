@@ -1,6 +1,7 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCgY7c-NysA2IG28UFP52YPH4J-vRLj204",
@@ -12,7 +13,18 @@ const firebaseConfig = {
   measurementId: "G-1VZFJDRRK8",
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth();
-export const analytics = getAnalytics(app);
-export const googleProvider = new GoogleAuthProvider();
+let app;
+let auth;
+let firestore;
+let analytics;
+let googleProvider;
+
+if (typeof window !== "undefined" && !getApps().length) {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth();
+  firestore = getFirestore();
+  analytics = getAnalytics(app);
+  googleProvider = new GoogleAuthProvider();
+}
+
+export { app, auth, firestore, analytics, googleProvider };
