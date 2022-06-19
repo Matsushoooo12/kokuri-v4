@@ -10,8 +10,10 @@ import { Tooltip } from "@chakra-ui/react";
 import { ImPencil } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import { MdArrowBackIos } from "react-icons/md";
+import { useRouter } from "next/router";
 
 const Sidebar = () => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const toggleNavbar = () => {
@@ -35,15 +37,19 @@ const Sidebar = () => {
         mt="20px"
         mb="56px"
         _hover={{ bg: "gray.100", cursor: "pointer" }}
+        w="100%"
+        onClick={() => router.push("/")}
       >
         Logo
       </Heading>
-      <Flex direction="column" alignItems="flex-start" mb="72px">
+      <Flex direction="column" alignItems="flex-start" mb="72px" w="100%">
         <Tooltip label="Home">
           <Flex
             p="20px"
+            w="100%"
             _hover={{ bg: "gray.100", cursor: "pointer" }}
             alignItems="center"
+            onClick={() => router.push("/")}
           >
             <Icon as={AiOutlineHome} fontSize="28px" alignSelf="center" />
             <Text
@@ -57,7 +63,11 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip label="Notification">
-          <Flex p="20px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="20px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+          >
             <Icon
               as={IoMdNotificationsOutline}
               fontSize="28px"
@@ -74,7 +84,12 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip label="Project">
-          <Flex p="20px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="20px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+            onClick={() => router.push("/projects")}
+          >
             <Icon
               as={MdOutlineStickyNote2}
               fontSize="24px"
@@ -91,7 +106,11 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip label="matching">
-          <Flex p="20px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="20px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+          >
             <Icon as={BiUser} fontSize="24px" alignSelf="center" />
             <Text
               ml="16px"
@@ -104,7 +123,11 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip label="Message">
-          <Flex p="20px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="20px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+          >
             <Icon as={FiMail} fontSize="24px" alignSelf="center" />
             <Text
               ml="16px"
@@ -117,7 +140,11 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip label="Bookmark">
-          <Flex p="20px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="20px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+          >
             <Icon
               as={MdOutlineBookmarkBorder}
               fontSize="28px"
@@ -142,9 +169,13 @@ const Sidebar = () => {
           />
         </Flex>
       </Flex>
-      <Flex direction="column" alignItems="flex-start">
+      <Flex direction="column" alignItems="flex-start" w="100%">
         <Tooltip label="Setting">
-          <Flex p="20px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="20px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+          >
             <Icon as={ImPencil} fontSize="28px" />
             <Text
               ml="16px"
@@ -157,7 +188,11 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip label="Profile">
-          <Flex p="18px" _hover={{ bg: "gray.100", cursor: "pointer" }}>
+          <Flex
+            p="18px"
+            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            w="100%"
+          >
             <Avatar src="" w="32px" h="32px" />
             <Text
               ml="16px"
