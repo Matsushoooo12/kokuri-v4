@@ -24,7 +24,6 @@ const ProjectIndex = () => {
           borderBottom="1px solid black"
           cursor="pointer"
           _hover={{ bg: "gray.100" }}
-          p="16px"
         >
           <Flex mr="60px">
             <Image w="180px" h="140px" bg="purple.100" alt="" />

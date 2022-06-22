@@ -6,13 +6,14 @@ import SearchContainer from "../components/SearchContainer";
 import Sidebar from "../components/Sidebar";
 import { auth } from "../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/router";
 
 export const AuthContext = React.createContext({});
 
 const MyApp = ({ Component, pageProps }) => {
   const [currentUser, setCurrentUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
-  console.log(currentUser);
+
   React.useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {

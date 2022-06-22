@@ -23,6 +23,9 @@ const Sidebar = () => {
     setIsOpen(!isOpen);
   };
 
+  let uri = window.location.href;
+  uri = decodeURI(uri);
+
   return (
     <Flex
       w={isOpen ? "200px" : "70px"}
@@ -55,7 +58,7 @@ const Sidebar = () => {
             w="100%"
             _hover={
               window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-                ? { bg: "red.100" }
+                ? { bg: "red.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             alignItems="center"
@@ -109,16 +112,15 @@ const Sidebar = () => {
           <Flex
             p="20px"
             _hover={
-              window.location.href ===
-              `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects`
-                ? { bg: "red.100" }
+              uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects`
+                ? { bg: "red.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             w="100%"
             onClick={() => router.push("/projects")}
             bg={
-              window.location.href ===
-                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects` && "red.100"
+              uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects` &&
+              "red.100"
             }
           >
             <Icon
@@ -220,9 +222,17 @@ const Sidebar = () => {
         >
           <Flex
             p="20px"
-            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            _hover={
+              uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new`
+                ? { bg: "red.100", cursor: "default" }
+                : { bg: "gray.100", cursor: "pointer" }
+            }
             w="100%"
             onClick={() => router.push("/projects/new")}
+            bg={
+              uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new` &&
+              "red.100"
+            }
           >
             <Icon as={ImPencil} fontSize="28px" />
             <Text
@@ -237,14 +247,25 @@ const Sidebar = () => {
         </Tooltip>
         {currentUser ? (
           <Tooltip
-            label={currentUser.username}
+            label="Edit profile"
             display={isOpen ? "none" : "block"}
             placement="right"
           >
             <Flex
               p="18px"
-              _hover={{ bg: "gray.100", cursor: "pointer" }}
+              _hover={
+                uri ===
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${currentUser.username}`
+                  ? { bg: "red.100", cursor: "default" }
+                  : { bg: "gray.100", cursor: "pointer" }
+              }
               w="100%"
+              bg={
+                uri ===
+                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${currentUser.username}` &&
+                "red.100"
+              }
+              onClick={() => router.push(`/users/${currentUser.username}`)}
             >
               <Avatar src={currentUser.avatar} w="32px" h="32px" />
               <Text
@@ -266,9 +287,17 @@ const Sidebar = () => {
             >
               <Flex
                 p="20px"
-                _hover={{ bg: "gray.100", cursor: "pointer" }}
+                _hover={
+                  uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}login`
+                    ? { bg: "red.100", cursor: "default" }
+                    : { bg: "gray.100", cursor: "pointer" }
+                }
                 w="100%"
                 onClick={() => router.push("/login")}
+                bg={
+                  uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}login` &&
+                  "red.100"
+                }
               >
                 <Icon as={FiLogIn} fontSize="28px" />
                 <Text
