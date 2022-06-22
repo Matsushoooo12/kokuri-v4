@@ -4,13 +4,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCgY7c-NysA2IG28UFP52YPH4J-vRLj204",
-  authDomain: "kokuri-v4.firebaseapp.com",
-  projectId: "kokuri-v4",
-  storageBucket: "kokuri-v4.appspot.com",
-  messagingSenderId: "257603556904",
-  appId: "1:257603556904:web:6eda0bd775dc41f82a871d",
-  measurementId: "G-1VZFJDRRK8",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 let app;

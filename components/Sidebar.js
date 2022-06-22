@@ -11,16 +11,18 @@ import { ImPencil } from "react-icons/im";
 import { MdArrowForwardIos } from "react-icons/md";
 import { MdArrowBackIos } from "react-icons/md";
 import { useRouter } from "next/router";
+import { AuthContext } from "../pages/_app";
+import { FiLogIn } from "react-icons/fi";
 
 const Sidebar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
+  const { currentUser } = React.useContext(AuthContext);
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
   };
 
-  console.log(isOpen);
   return (
     <Flex
       w={isOpen ? "200px" : "70px"}
@@ -43,13 +45,25 @@ const Sidebar = () => {
         Logo
       </Heading>
       <Flex direction="column" alignItems="flex-start" mb="72px" w="100%">
-        <Tooltip label="Home">
+        <Tooltip
+          label="Home"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
             w="100%"
-            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            _hover={
+              window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN
+                ? { bg: "red.100" }
+                : { bg: "gray.100", cursor: "pointer" }
+            }
             alignItems="center"
             onClick={() => router.push("/")}
+            bg={
+              window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN &&
+              "red.100"
+            }
           >
             <Icon as={AiOutlineHome} fontSize="28px" alignSelf="center" />
             <Text
@@ -62,7 +76,11 @@ const Sidebar = () => {
             </Text>
           </Flex>
         </Tooltip>
-        <Tooltip label="Notification">
+        <Tooltip
+          label="Notification"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
             _hover={{ bg: "gray.100", cursor: "pointer" }}
@@ -83,12 +101,25 @@ const Sidebar = () => {
             </Text>
           </Flex>
         </Tooltip>
-        <Tooltip label="Project">
+        <Tooltip
+          label="Projects"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
-            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            _hover={
+              window.location.href ===
+              `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects`
+                ? { bg: "red.100" }
+                : { bg: "gray.100", cursor: "pointer" }
+            }
             w="100%"
             onClick={() => router.push("/projects")}
+            bg={
+              window.location.href ===
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects` && "red.100"
+            }
           >
             <Icon
               as={MdOutlineStickyNote2}
@@ -101,11 +132,15 @@ const Sidebar = () => {
               fontWeight="bold"
               display={isOpen ? "block" : "none"}
             >
-              Project
+              Projects
             </Text>
           </Flex>
         </Tooltip>
-        <Tooltip label="matching">
+        <Tooltip
+          label="users"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
             _hover={{ bg: "gray.100", cursor: "pointer" }}
@@ -118,11 +153,15 @@ const Sidebar = () => {
               fontWeight="bold"
               display={isOpen ? "block" : "none"}
             >
-              Matching
+              users
             </Text>
           </Flex>
         </Tooltip>
-        <Tooltip label="Message">
+        <Tooltip
+          label="Message"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
             _hover={{ bg: "gray.100", cursor: "pointer" }}
@@ -139,7 +178,11 @@ const Sidebar = () => {
             </Text>
           </Flex>
         </Tooltip>
-        <Tooltip label="Bookmark">
+        <Tooltip
+          label="Bookmark"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
             _hover={{ bg: "gray.100", cursor: "pointer" }}
@@ -170,11 +213,16 @@ const Sidebar = () => {
         </Flex>
       </Flex>
       <Flex direction="column" alignItems="flex-start" w="100%">
-        <Tooltip label="Setting">
+        <Tooltip
+          label="Create a project"
+          display={isOpen ? "none" : "block"}
+          placement="right"
+        >
           <Flex
             p="20px"
             _hover={{ bg: "gray.100", cursor: "pointer" }}
             w="100%"
+            onClick={() => router.push("/projects/new")}
           >
             <Icon as={ImPencil} fontSize="28px" />
             <Text
@@ -183,27 +231,58 @@ const Sidebar = () => {
               fontWeight="bold"
               display={isOpen ? "block" : "none"}
             >
-              Setting
+              Create a project
             </Text>
           </Flex>
         </Tooltip>
-        <Tooltip label="Profile">
-          <Flex
-            p="18px"
-            _hover={{ bg: "gray.100", cursor: "pointer" }}
-            w="100%"
+        {currentUser ? (
+          <Tooltip
+            label={currentUser.username}
+            display={isOpen ? "none" : "block"}
+            placement="right"
           >
-            <Avatar src="" w="32px" h="32px" />
-            <Text
-              ml="16px"
-              fontSize="20px"
-              fontWeight="bold"
-              display={isOpen ? "block" : "none"}
+            <Flex
+              p="18px"
+              _hover={{ bg: "gray.100", cursor: "pointer" }}
+              w="100%"
             >
-              Profile
-            </Text>
-          </Flex>
-        </Tooltip>
+              <Avatar src={currentUser.avatar} w="32px" h="32px" />
+              <Text
+                ml="16px"
+                fontSize="20px"
+                fontWeight="bold"
+                display={isOpen ? "block" : "none"}
+              >
+                {currentUser.username}
+              </Text>
+            </Flex>
+          </Tooltip>
+        ) : (
+          <>
+            <Tooltip
+              label="登録"
+              display={isOpen ? "none" : "block"}
+              placement="right"
+            >
+              <Flex
+                p="20px"
+                _hover={{ bg: "gray.100", cursor: "pointer" }}
+                w="100%"
+                onClick={() => router.push("/login")}
+              >
+                <Icon as={FiLogIn} fontSize="28px" />
+                <Text
+                  ml="16px"
+                  fontSize="20px"
+                  fontWeight="bold"
+                  display={isOpen ? "block" : "none"}
+                >
+                  登録
+                </Text>
+              </Flex>
+            </Tooltip>
+          </>
+        )}
       </Flex>
     </Flex>
   );
