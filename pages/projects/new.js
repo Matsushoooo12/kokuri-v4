@@ -1,5 +1,5 @@
 import React from "react";
-import { auth, db } from "../../firebase/config";
+import { auth, db, storage } from "../../firebase/config";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { AuthContext } from "../_app";
 import Link from "next/link";
@@ -21,46 +21,79 @@ import {
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { FaFileUpload } from "react-icons/fa";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 const CreateProject = () => {
   const [user] = useAuthState(auth);
   const router = useRouter();
   const [title, setTitle] = React.useState("");
+  const [summary, setSummary] = React.useState("");
   const [thumbnail, setThubmnail] = React.useState(null);
   const [preview, setPreview] = React.useState("");
   const { currentUser } = React.useContext(AuthContext);
   const previewRef = React.useRef();
-  // プレビュー機能
-  const previewImage = React.useCallback((e) => {
-    const file = e.target.files[0];
-    setPreview(window.URL.createObjectURL(file));
-  }, []);
+
   const onClick = () => {
     if (previewRef.current) {
       previewRef.current.click();
     }
   };
+
+  const onChangeImageHandler = (e) => {
+    if (e.target.files[0]) {
+      // プレビュー機能
+      const file = e.target.files[0];
+      setPreview(window.URL.createObjectURL(file));
+      // サムネイル
+      setThubmnail(e.target.files[0]);
+      e.target.value = "";
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await addDoc(collection(db, "projects"), {
-        title: title,
-        uid: user.uid,
-        timestamp: serverTimestamp(),
-      }).then(() => {
-        router.push("/");
-      });
-    } catch (e) {
-      console.log(e);
-    }
-    setTitle("");
+    const uploadProjectThumbnail = uploadBytesResumable(
+      ref(storage, `projects/${thumbnail.name}`),
+      thumbnail
+    );
+    uploadProjectThumbnail.on(
+      "state_changed",
+      () => {},
+      (err) => {
+        alert(err.message);
+      },
+      async () => {
+        await getDownloadURL(ref(storage, `projects/${thumbnail.name}`)).then(
+          async (url) => {
+            try {
+              await addDoc(collection(db, "projects"), {
+                title: title,
+                summary: summary,
+                user: {
+                  name: user.displayName,
+                  avatar: user.photoURL,
+                },
+                thumbnail: url,
+                timestamp: serverTimestamp(),
+              }).then(() => {
+                router.push("/");
+              });
+            } catch (e) {
+              console.log(e);
+            }
+            setTitle("");
+            setSummary("");
+            setThubmnail(null);
+          }
+        );
+      }
+    );
   };
 
   return (
     <Flex
       w="100%"
       pt="64px"
-      mb="96px"
       px="32px"
       h="100%"
       justifyContent="center"
@@ -94,7 +127,8 @@ const CreateProject = () => {
                     概要
                   </Text>
                   <Textarea
-                    //   flex={1}
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
                     w="700px"
                     type="text"
                     placeholder="３行程度で作りたいものが伝わる概要を書いてみましょう"
@@ -139,19 +173,19 @@ const CreateProject = () => {
                           </Text>
                           <Box textAlign="center">
                             {/* <Text>ドラッグ＆ドロップ</Text> */}
-                            <Text mb="16px">
+                            <Text>
                               {/* または */}
                               クリックしてファイルをアップロード
                             </Text>
-                            <Text>縦横比４：６推奨</Text>
                           </Box>
+                          <Text>縦横比４：６推奨</Text>
                         </VStack>
                       </Flex>
                     </Center>
                   )}
                   <Input
                     type="file"
-                    onChange={(e) => previewImage(e)}
+                    onChange={(e) => onChangeImageHandler(e)}
                     style={{ display: "none" }}
                     name="image"
                     id="image"
@@ -159,7 +193,7 @@ const CreateProject = () => {
                   />
                 </Flex>
                 <Divider my="32px" />
-                <Box>
+                <Box pb="96px">
                   <Button disabled={title === "" && true} type="submit">
                     プロジェクト作成
                   </Button>
