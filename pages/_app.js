@@ -1,12 +1,11 @@
 import React from "react";
 import { Center, ChakraProvider, Flex, Spinner } from "@chakra-ui/react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import MainContainer from "../components/MainContainer";
 import SearchContainer from "../components/SearchContainer";
+import "../styles/globals.css";
 import Sidebar from "../components/Sidebar";
 import { auth } from "../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/router";
 
 export const AuthContext = React.createContext({});
 
@@ -14,9 +13,21 @@ const MyApp = ({ Component, pageProps }) => {
   const [currentUser, setCurrentUser] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
+  const authUrl = (url) => {
+    if (
+      url.indexOf(`${process.env.NEXT_PUBLIC_ROOT_DOMAIN}login`) != -1 ||
+      url.indexOf(`${process.env.NEXT_PUBLIC_ROOT_DOMAIN}signup`) != -1
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   React.useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log("user", user);
         setCurrentUser({
           username: user.displayName,
           email: user.email,
@@ -43,13 +54,17 @@ const MyApp = ({ Component, pageProps }) => {
       <AuthContext.Provider
         value={{ currentUser, setCurrentUser, loading, setLoading }}
       >
-        <Flex>
-          <Sidebar />
-          <MainContainer>
-            <Component {...pageProps} />
-          </MainContainer>
-          <SearchContainer />
-        </Flex>
+        {!authUrl(window.location.href) ? (
+          <Flex>
+            <Sidebar />
+            <MainContainer>
+              <Component {...pageProps} />
+            </MainContainer>
+            <SearchContainer />
+          </Flex>
+        ) : (
+          <Component {...pageProps} />
+        )}
       </AuthContext.Provider>
     </ChakraProvider>
   );

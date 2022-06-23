@@ -15,16 +15,16 @@ const firebaseConfig = {
 
 let app;
 let auth;
-let firestore;
+let db;
 let analytics;
 let googleProvider;
 
 if (typeof window !== "undefined" && !getApps().length) {
   app = initializeApp(firebaseConfig);
   auth = getAuth();
-  firestore = getFirestore();
   analytics = getAnalytics(app);
+  db = getFirestore(app);
   googleProvider = new GoogleAuthProvider();
 }
 
-export { app, auth, firestore, analytics, googleProvider };
+export { app, auth, analytics, googleProvider, db };

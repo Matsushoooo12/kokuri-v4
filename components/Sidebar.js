@@ -13,11 +13,14 @@ import { MdArrowBackIos } from "react-icons/md";
 import { useRouter } from "next/router";
 import { AuthContext } from "../pages/_app";
 import { FiLogIn } from "react-icons/fi";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../firebase/config";
 
 const Sidebar = () => {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const { currentUser } = React.useContext(AuthContext);
+  const [user] = useAuthState(auth);
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);
@@ -58,14 +61,14 @@ const Sidebar = () => {
             w="100%"
             _hover={
               window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-                ? { bg: "red.100", cursor: "default" }
+                ? { bg: "teal.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             alignItems="center"
             onClick={() => router.push("/")}
             bg={
               window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN &&
-              "red.100"
+              "teal.100"
             }
           >
             <Icon as={AiOutlineHome} fontSize="28px" alignSelf="center" />
@@ -113,20 +116,21 @@ const Sidebar = () => {
             p="20px"
             _hover={
               uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects`
-                ? { bg: "red.100", cursor: "default" }
+                ? { bg: "teal.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             w="100%"
             onClick={() => router.push("/projects")}
             bg={
               uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects` &&
-              "red.100"
+              "teal.100"
             }
           >
             <Icon
               as={MdOutlineStickyNote2}
               fontSize="24px"
               alignSelf="center"
+              ml="2px"
             />
             <Text
               ml="16px"
@@ -148,7 +152,7 @@ const Sidebar = () => {
             _hover={{ bg: "gray.100", cursor: "pointer" }}
             w="100%"
           >
-            <Icon as={BiUser} fontSize="24px" alignSelf="center" />
+            <Icon ml="2px" as={BiUser} fontSize="24px" alignSelf="center" />
             <Text
               ml="16px"
               fontSize="20px"
@@ -169,7 +173,7 @@ const Sidebar = () => {
             _hover={{ bg: "gray.100", cursor: "pointer" }}
             w="100%"
           >
-            <Icon as={FiMail} fontSize="24px" alignSelf="center" />
+            <Icon ml="2px" as={FiMail} fontSize="24px" alignSelf="center" />
             <Text
               ml="16px"
               fontSize="20px"
@@ -224,14 +228,14 @@ const Sidebar = () => {
             p="20px"
             _hover={
               uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new`
-                ? { bg: "red.100", cursor: "default" }
+                ? { bg: "teal.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             w="100%"
             onClick={() => router.push("/projects/new")}
             bg={
               uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new` &&
-              "red.100"
+              "teal.100"
             }
           >
             <Icon as={ImPencil} fontSize="28px" />
@@ -241,7 +245,7 @@ const Sidebar = () => {
               fontWeight="bold"
               display={isOpen ? "block" : "none"}
             >
-              Create a project
+              Create
             </Text>
           </Flex>
         </Tooltip>
@@ -255,26 +259,26 @@ const Sidebar = () => {
               p="18px"
               _hover={
                 uri ===
-                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${currentUser.username}`
-                  ? { bg: "red.100", cursor: "default" }
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.displayName}`
+                  ? { bg: "teal.100", cursor: "default" }
                   : { bg: "gray.100", cursor: "pointer" }
               }
               w="100%"
               bg={
                 uri ===
-                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${currentUser.username}` &&
-                "red.100"
+                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.displayName}` &&
+                "teal.100"
               }
-              onClick={() => router.push(`/users/${currentUser.username}`)}
+              onClick={() => router.push(`/users/${user.displayName}`)}
             >
-              <Avatar src={currentUser.avatar} w="32px" h="32px" />
+              <Avatar src={user.photoURL} w="32px" h="32px" />
               <Text
                 ml="16px"
                 fontSize="20px"
                 fontWeight="bold"
                 display={isOpen ? "block" : "none"}
               >
-                {currentUser.username}
+                {user.displayName}
               </Text>
             </Flex>
           </Tooltip>
@@ -289,14 +293,14 @@ const Sidebar = () => {
                 p="20px"
                 _hover={
                   uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}login`
-                    ? { bg: "red.100", cursor: "default" }
+                    ? { bg: "teal.100", cursor: "default" }
                     : { bg: "gray.100", cursor: "pointer" }
                 }
                 w="100%"
                 onClick={() => router.push("/login")}
                 bg={
                   uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}login` &&
-                  "red.100"
+                  "teal.100"
                 }
               >
                 <Icon as={FiLogIn} fontSize="28px" />

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Button,
@@ -9,7 +10,11 @@ import {
   InputGroup,
   Text,
 } from "@chakra-ui/react";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import {
   collection,
   doc,
@@ -19,23 +24,36 @@ import {
 } from "firebase/firestore";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
 import { auth, db, googleProvider } from "../../firebase/config";
 
-const Login = () => {
+const Signup = () => {
   const router = useRouter();
+  const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = React.useState("");
 
-  const EmailLogin = async (e) => {
+  const EmailSignup = async (e) => {
     e.preventDefault();
-    await signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
+    await createUserWithEmailAndPassword(auth, email, password).then(
+      async (res) => {
+        await updateProfile(res.user, { displayName: name, photoURL: "" });
+        const querySnapshot = await getDocs(collection(db, "users"));
+        const user = [];
+        querySnapshot.forEach((doc) => {
+          user.push(doc.id);
+        });
+        if (!user.includes(res.user.uid)) {
+          await setDoc(doc(db, "users", res.user.uid), {
+            name: name,
+            email: res.user.email,
+            photoURL: "",
+            timestamp: serverTimestamp(),
+          });
+        }
         router.push("/");
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+      }
+    );
   };
 
   const onClickHome = () => {
@@ -68,25 +86,31 @@ const Login = () => {
     >
       <Flex mb="30px">
         <Heading fontSize="40px" color="teal.500" mr="8px">
-          Welcom Back
+          Welcom to
         </Heading>
         <Box
-          onClick={onClickHome}
           cursor="pointer"
+          onClick={onClickHome}
           w="200px"
           h="40px"
           bg="teal.100"
         />
       </Flex>
-      <Flex
-        direction="column"
-        w="392px"
-        boxShadow="2xl"
-        p="24px"
-        borderRadius="md"
-      >
-        <InputGroup as="form" w="100%" onSubmit={EmailLogin}>
+      <Flex direction="column" w="392px" boxShadow="2xl" p="24px">
+        <InputGroup onSubmit={EmailSignup} as="form" w="100%">
           <Box w="100%">
+            <Flex direction="column" mb="16px">
+              <Text fontWeight="500" mb="8px">
+                name
+              </Text>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Please type your name."
+                borderRadius="md"
+              />
+            </Flex>
             <Flex direction="column" mb="16px">
               <Text fontWeight="500" mb="8px">
                 Email
@@ -111,15 +135,27 @@ const Login = () => {
                 borderRadius="md"
               />
             </Flex>
+            <Flex direction="column" mb="16px">
+              <Text fontWeight="500" mb="8px">
+                password confirmation
+              </Text>
+              <Input
+                type="password"
+                value={passwordConfirmation}
+                onChange={(e) => setPasswordConfirmation(e.target.value)}
+                placeholder="Please confirm password."
+                borderRadius="md"
+              />
+            </Flex>
             <Button
-              _hover={{ bg: "teal.400" }}
               w="100%"
               bg="teal.500"
               color="white"
               mb="24px"
+              _hover={{ bg: "teal.400" }}
               type="submit"
             >
-              ログイン
+              アカウントを作成
             </Button>
             <Flex justifyContent="space-around" mb="48px">
               <Text>or sign up with</Text>
@@ -130,7 +166,6 @@ const Login = () => {
                   w="24px"
                   h="24px"
                   alt="google"
-                  cursor="pointer"
                 />
                 <Image
                   src="/twitter-icon.svg"
@@ -148,9 +183,9 @@ const Login = () => {
               </HStack>
             </Flex>
             <Flex justifyContent="space-around" color="teal.500">
-              <Text color="black">Dont`t have an account?</Text>
-              <Link href="/signup">
-                <a style={{ fontWeight: "bold" }}>Sign up</a>
+              <Text color="black">Have an account?</Text>
+              <Link href="/login">
+                <a style={{ fontWeight: "bold" }}>Login</a>
               </Link>
             </Flex>
           </Box>
@@ -160,4 +195,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

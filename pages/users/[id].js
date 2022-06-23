@@ -11,7 +11,7 @@ const DetailUser = () => {
 
   const handleSignOut = async () => {
     await signOut(auth).then(() => {
-      router.push("/login");
+      router.push("/");
     });
   };
   return (

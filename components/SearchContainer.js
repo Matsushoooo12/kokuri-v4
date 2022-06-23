@@ -16,11 +16,7 @@ const SearchContainer = () => {
     <Flex minW="300px" h="100vh" borderLeft="1px solid black">
       <Flex direction="column" mx="30px">
         <InputGroup mt="50px">
-          <Input
-            focusBorderColor="none"
-            borderRadius="xl"
-            placeholder="キーワードで検索"
-          />
+          <Input borderRadius="xl" placeholder="キーワードで検索" />
           <InputRightElement children={<Icon as={BiSearch} />} />
         </InputGroup>
         <Flex direction="column" mt="20px">
