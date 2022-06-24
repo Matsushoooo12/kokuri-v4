@@ -4,6 +4,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { AuthContext } from "../_app";
 import Link from "next/link";
 import {
+  Badge,
   Box,
   Button,
   Center,
@@ -11,17 +12,40 @@ import {
   Flex,
   Heading,
   Icon,
+  IconButton,
   Image,
   Input,
   InputGroup,
+  Select,
   Text,
   Textarea,
+  Tooltip,
   VStack,
 } from "@chakra-ui/react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { FaFileUpload } from "react-icons/fa";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  AiOutlineUnderline,
+  AiOutlineBold,
+  AiOutlineStrikethrough,
+  AiOutlineItalic,
+  AiOutlineAlignLeft,
+  AiOutlineAlignCenter,
+  AiOutlineAlignRight,
+  AiOutlineLink,
+} from "react-icons/ai";
+import {
+  BsTypeH1,
+  BsTypeH2,
+  BsTypeH3,
+  BsImage,
+  BsBlockquoteLeft,
+  BsCodeSlash,
+} from "react-icons/bs";
+import { MdHorizontalRule } from "react-icons/md";
+import { VscPreview } from "react-icons/vsc";
 
 const CreateProject = () => {
   const [user] = useAuthState(auth);
@@ -32,6 +56,12 @@ const CreateProject = () => {
   const [preview, setPreview] = React.useState("");
   const { currentUser } = React.useContext(AuthContext);
   const previewRef = React.useRef();
+
+  //画面遷移しようとする前に確認ダイアログを出す.
+  window.onbeforeunload = function () {
+    //Chromeでは動かない.デフォルトの文言が表示される.
+    return "編集中です。本当に他のページに移動しますか?";
+  };
 
   const onClick = () => {
     if (previewRef.current) {
@@ -109,9 +139,12 @@ const CreateProject = () => {
             <InputGroup as="form" onSubmit={handleSubmit} w="100%">
               <Flex direction="column" w="100%">
                 <Flex w="100%" justifyContent="space-between" mb="32px">
-                  <Text w="200px" fontWeight="bold" fontSize="16px">
-                    タイトル
-                  </Text>
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      タイトル
+                    </Text>
+                    <Badge colorScheme="red">必須</Badge>
+                  </Flex>
                   <Input
                     w="700px"
                     type="text"
@@ -123,9 +156,12 @@ const CreateProject = () => {
                 </Flex>
                 <Divider />
                 <Flex w="100%" justifyContent="space-between" mt="32px">
-                  <Text w="200px" fontWeight="bold" fontSize="16px">
-                    概要
-                  </Text>
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      概要
+                    </Text>
+                    <Badge colorScheme="red">必須</Badge>
+                  </Flex>
                   <Textarea
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
@@ -137,9 +173,12 @@ const CreateProject = () => {
                 </Flex>
                 <Divider my="32px" />
                 <Flex w="100%" justifyContent="space-between">
-                  <Text w="200px" fontWeight="bold" fontSize="16px">
-                    サムネイル
-                  </Text>
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      サムネイル
+                    </Text>
+                    <Badge colorScheme="red">必須</Badge>
+                  </Flex>
                   {preview ? (
                     <Image
                       objectFit="cover"
@@ -191,6 +230,174 @@ const CreateProject = () => {
                     id="image"
                     ref={previewRef}
                   />
+                </Flex>
+                <Divider my="32px" />
+                <Flex w="100%" h="100%" justifyContent="space-between">
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      本文
+                    </Text>
+                    <Badge colorScheme="red" mr="16px">
+                      必須
+                    </Badge>
+                    <Link href="">
+                      <a style={{ fontWeight: "bold", color: "teal" }}>
+                        プレビュー
+                      </a>
+                    </Link>
+                  </Flex>
+                  <Flex
+                    direction="column"
+                    w="700px"
+                    h="500px"
+                    // bg="gray.100"
+                    borderRadius="xl"
+                    position="relative"
+                    top="0"
+                    border="1px solid gray"
+                    borderColor="gray.300"
+                  >
+                    <Flex
+                      w="100%"
+                      h="40px"
+                      //   bg="yellow.100"
+                      position="absolute"
+                      borderTopRadius="xl"
+                      borderBottom="1px solid gray"
+                      borderColor="gray.300"
+                      pl="16px"
+                      bg="white"
+                      zIndex="10"
+                    >
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={BsTypeH1}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={BsTypeH2}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={BsTypeH3}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineBold}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineUnderline}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineStrikethrough}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineItalic}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={BsBlockquoteLeft}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={BsCodeSlash}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineAlignLeft}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineAlignCenter}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineAlignRight}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineLink}
+                        h="39px"
+                        w="39px"
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={BsImage}
+                        h="39px"
+                        w="39px"
+                      />
+                    </Flex>
+                    <Box
+                      w="100%"
+                      h="100%"
+                      //   bg="green.100"
+                      overflowY="scroll"
+                      borderRadius="xl"
+                    >
+                      <Box
+                        w="100%"
+                        h="1000px"
+                        // bg="blue.100"
+                        borderRadius="xl"
+                        pt="56px"
+                      ></Box>
+                    </Box>
+                  </Flex>
                 </Flex>
                 <Divider my="32px" />
                 <Box pb="96px">

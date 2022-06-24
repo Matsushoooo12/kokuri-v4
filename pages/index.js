@@ -46,14 +46,7 @@ export default function Home() {
             <Tab>Projects</Tab>
             <Tab>Users</Tab>
           </TabList>
-          <TabPanels
-            h="100%"
-            overflowX="scroll"
-            pt="100px"
-            w="100%"
-            pr="40px"
-            className="scrollbar-off"
-          >
+          <TabPanels h="100%" overflowX="scroll" pt="100px" w="100%" pr="40px">
             <TabPanel>
               <ProjectIndex />
             </TabPanel>
