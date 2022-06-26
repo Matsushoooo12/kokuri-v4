@@ -19,12 +19,13 @@ const ProjectIndex = () => {
         {/* Projectカード一覧 */}
         <Flex
           w="100%"
-          h="256px"
-          mb="48px"
-          borderBottom="1px solid black"
+          h="100%"
+          pb="32px"
+          mb="32px"
+          borderBottom="1px solid #ddd"
           cursor="pointer"
         >
-          <Flex mr="60px">
+          <Flex mr="24px">
             <Image w="180px" h="140px" bg="purple.100" alt="" />
           </Flex>
           <Flex flex={1} h="100%" direction="column">

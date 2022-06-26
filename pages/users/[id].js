@@ -14,11 +14,23 @@ const DetailUser = () => {
       router.push("/");
     });
   };
+
+  console.log(decodeURI(window.location.href));
   return (
-    <Flex direction="column">
-      <Heading>{currentUser?.username}</Heading>
-      <Button onClick={handleSignOut}>ログアウト</Button>
-    </Flex>
+    <>
+      {decodeURI(window.location.href) ===
+      `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${currentUser.uid}` ? (
+        <Flex direction="column">
+          <Heading>{currentUser?.username}</Heading>
+          <Button onClick={handleSignOut}>ログアウト</Button>
+        </Flex>
+      ) : (
+        <Flex direction="column">
+          <Heading>こんにちは</Heading>
+          <Button onClick={handleSignOut}>ログアウト</Button>
+        </Flex>
+      )}
+    </>
   );
 };
 

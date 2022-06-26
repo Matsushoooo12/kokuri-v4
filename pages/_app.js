@@ -32,6 +32,7 @@ const MyApp = ({ Component, pageProps }) => {
           username: user.displayName,
           email: user.email,
           avatar: user.photoURL,
+          uid: user.uid,
         });
       } else {
         setCurrentUser(null);

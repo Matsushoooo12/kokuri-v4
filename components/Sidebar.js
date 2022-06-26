@@ -269,7 +269,7 @@ const Sidebar = () => {
                   `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.displayName}` &&
                 "teal.100"
               }
-              onClick={() => router.push(`/users/${user.displayName}`)}
+              onClick={() => router.push(`/users/${user.uid}`)}
             >
               <Avatar src={user.photoURL} w="32px" h="32px" />
               <Text
