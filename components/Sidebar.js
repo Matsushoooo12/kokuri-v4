@@ -213,6 +213,7 @@ const Sidebar = () => {
       <Flex direction="column" alignItems="center" onClick={toggleNavbar}>
         <Flex p="20px" _hover={{ cursor: "pointer" }}>
           <Icon
+            ml={isOpen ? "6px" : 0}
             as={isOpen ? MdArrowBackIos : MdArrowForwardIos}
             fontSize="24px"
           />
@@ -232,7 +233,9 @@ const Sidebar = () => {
                 : { bg: "gray.100", cursor: "pointer" }
             }
             w="100%"
-            onClick={() => router.push("/projects/new")}
+            onClick={() => {
+              router.replace("/projects/new");
+            }}
             bg={
               uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new` &&
               "teal.100"
@@ -266,7 +269,7 @@ const Sidebar = () => {
               w="100%"
               bg={
                 uri ===
-                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.displayName}` &&
+                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.uid}` &&
                 "teal.100"
               }
               onClick={() => router.push(`/users/${user.uid}`)}

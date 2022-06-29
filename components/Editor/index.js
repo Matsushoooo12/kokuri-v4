@@ -8,9 +8,11 @@ const Editor = ({
   setEditorState,
   handleKeyCommand,
   editorRef,
+  readOnly,
 }) => {
   return (
     <DraftEditor
+      readOnly={readOnly}
       ref={editorRef}
       blockStyleFn={myBlockStyleFn}
       editorState={editorState}

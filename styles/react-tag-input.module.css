@@ -1,0 +1,53 @@
+.ReactTags__tags {
+  background-color: #ddd;
+}
+
+.ReactTags__tagInput {
+  background-color: red;
+}
+
+.ReactTags__tagInputField {
+  background-color: yellow;
+}
+
+.ReactTags__tagInputField:focus-visible {
+  outline: none;
+}
+
+.ReactTags__selected {
+  background-color: yellowgreen;
+}
+
+.ReactTags__selected .ReactTags__tag {
+  background-color: gray;
+}
+
+.ReactTags__selected .ReactTags__remove {
+  background-color: blueviolet;
+}
+
+.ReactTags__suggestions {
+  background-color: aqua;
+  width: 100%;
+}
+
+/* ul {
+  padding-left: 0;
+} */
+
+.ReactTags__activeSuggestion {
+  background-color: bisque;
+  width: 100%;
+}
+
+.ReactTags__editTagInput {
+  background-color: brown;
+}
+
+.ReactTags__editTagInputField {
+  background-color: lightblue;
+}
+
+.ReactTags__clearAll {
+  background-color: lightslategray;
+}

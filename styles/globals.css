@@ -54,3 +54,72 @@ a {
   padding-left: 8px;
   color: gray;
 }
+
+.ReactTags__tags {
+  background-color: #eee;
+  padding: 16px;
+}
+
+.ReactTags__tagInput {
+  background-color: red;
+}
+
+.ReactTags__tagInputField {
+  background-color: white;
+  width: 100%;
+  height: 40px;
+}
+
+.ReactTags__tagInputField:focus-visible {
+  outline: none;
+}
+
+.ReactTags__selected {
+  /* background-color: yellowgreen; */
+  /* padding: 8px 0; */
+  padding-bottom: 8px;
+}
+
+.ReactTags__tag {
+  padding: 4px 8px;
+  margin-bottom: 8px;
+}
+
+.ReactTags__selected .ReactTags__tag {
+  /* background-color: gray; */
+  background-color: white;
+  margin-right: 8px;
+}
+
+/* .ReactTags__selected .ReactTags__remove { */
+/* background-color: blueviolet; */
+/* } */
+
+.ReactTags__suggestions {
+  background-color: aqua;
+}
+
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style: none;
+}
+
+.ReactTags__activeSuggestion {
+  background-color: bisque;
+  width: 100%;
+}
+
+.ReactTags__editTagInput {
+  background-color: brown;
+}
+
+.ReactTags__editTagInputField {
+  background-color: lightblue;
+}
+
+.ReactTags__clearAll {
+  background-color: lightslategray;
+}

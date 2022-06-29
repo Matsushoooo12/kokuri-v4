@@ -11,14 +11,21 @@ import {
   Center,
   Divider,
   Flex,
+  FormControl,
   Heading,
   Icon,
   IconButton,
   Image,
   Input,
   InputGroup,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
   Text,
   Textarea,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -33,6 +40,7 @@ import {
   AiOutlineLink,
   AiOutlineUnorderedList,
   AiOutlineOrderedList,
+  AiOutlineClose,
 } from "react-icons/ai";
 import {
   BsTypeH1,
@@ -46,6 +54,9 @@ import { convertFromRaw, convertToRaw, EditorState, RichUtils } from "draft-js";
 import { RiParagraph } from "react-icons/ri";
 import draftToHtml from "draftjs-to-html";
 import { BiHeading } from "react-icons/bi";
+import { PROJECT_TAGS } from "../../components/Tag/projectTag";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const Editor = dynamic(import("../../components/Editor/index"), { ssr: false });
 
@@ -246,11 +257,32 @@ const initData = convertFromRaw({
 
 const initState = EditorState.createWithContent(initData);
 
+const ReactTags = require("react-tag-input").WithOutContext;
+
+// tag
+
+const tagSuggestions = PROJECT_TAGS.map((projectTag) => {
+  return {
+    id: projectTag,
+    text: projectTag,
+  };
+});
+
+const KeyCodes = {
+  comma: 188,
+  enter: 13,
+};
+
+const delimiters = [KeyCodes.comma, KeyCodes.enter];
+
 const CreateProject = () => {
   const [user] = useAuthState(auth);
   const router = useRouter();
   const [editorState, setEditorState] = React.useState(initState);
   const [paragraphOpen, setParagraphOpen] = React.useState(true);
+  const [focus, setFocus] = React.useState(false);
+  const [tags, setTags] = React.useState([]);
+  const [roles, setRoles] = React.useState([]);
   const [h1Open, setH1Open] = React.useState(false);
   const [h2Open, setH2Open] = React.useState(false);
   const [unorderedlistOpen, setUnorderedlistOpen] = React.useState(false);
@@ -264,21 +296,24 @@ const CreateProject = () => {
   const { currentUser } = React.useContext(AuthContext);
   const previewRef = React.useRef(null);
 
-  if (
-    window.location.href ===
-    `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new`
-  ) {
-    //画面遷移しようとする前に確認ダイアログを出す.
-    window.onbeforeunload = function () {
-      //Chromeでは動かない.デフォルトの文言が表示される.
-      return "編集中です。本当に他のページに移動しますか?";
-    };
-  }
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const onClick = () => {
+  // if (
+  //   window.location.href ===
+  //   `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new`
+  // ) {
+  //   //画面遷移しようとする前に確認ダイアログを出す.
+  //   window.onbeforeunload = function () {
+  //     //Chromeでは動かない.デフォルトの文言が表示される.
+  //     return "編集中です。本当に他のページに移動しますか?";
+  //   };
+  // }
+
+  const onClickThumbnailPreview = () => {
     if (previewRef.current) {
       previewRef.current.click();
     }
+    setFocus(false);
   };
 
   const onChangeImageHandler = (e) => {
@@ -476,6 +511,8 @@ const CreateProject = () => {
                   name: user.displayName,
                   avatar: user.photoURL,
                 },
+                tags: tags,
+                roles: roles,
                 thumbnail: url,
                 timestamp: serverTimestamp(),
               }).then(() => {
@@ -493,10 +530,18 @@ const CreateProject = () => {
     );
   };
 
-  console.log(
-    "editorState",
-    draftToHtml(convertToRaw(editorState.getCurrentContent()))
-  );
+  const handleEditorFocus = () => {
+    setFocus(true);
+  };
+
+  const handleEditorUnFocus = () => {
+    setFocus(false);
+  };
+
+  // console.log(
+  //   "editorState",
+  //   draftToHtml(convertToRaw(editorState.getCurrentContent()))
+  // );
 
   console.log("block", convertToRaw(editorState.getCurrentContent()));
 
@@ -505,9 +550,18 @@ const CreateProject = () => {
     JSON.stringify(convertToRaw(editorState.getCurrentContent()))
   );
 
+  console.log("editorState", editorState);
+
+  console.log(
+    "convertFromRow",
+    convertFromRaw(convertToRaw(editorState.getCurrentContent()))
+  );
+
   const json = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
   const parse = JSON.parse(json);
   console.log("parse", parse);
+
+  console.log("json", json);
 
   const h1Array = convertToRaw(editorState.getCurrentContent()).blocks.filter(
     (item) => item.type === "header-one"
@@ -517,8 +571,58 @@ const CreateProject = () => {
 
   const editorRef = React.useRef(null);
   React.useEffect(() => {
-    editorRef.current?.focus();
-  }, [setEditorState, editorState]);
+    if (focus) {
+      editorRef?.current?.focus();
+    }
+  }, [editorState, focus, setEditorState]);
+
+  // tag
+  const handleTagDelete = (i) => {
+    setTags(tags.filter((tag, index) => index !== i));
+  };
+
+  const handleTagAddition = (tag) => {
+    setTags([...tags, tag]);
+  };
+
+  const handleTagDrag = (tag, currPos, newPos) => {
+    const newTags = tags.slice();
+
+    newTags.splice(currPos, 1);
+    newTags.splice(newPos, 0, tag);
+
+    // re-render
+    setTags(newTags);
+  };
+
+  const handleTagClick = (index) => {
+    console.log("The tag at index " + index + " was clicked");
+  };
+
+  // role
+  const handleRoleDelete = (i) => {
+    setRoles(roles.filter((role, index) => index !== i));
+  };
+
+  const handleRoleAddition = (role) => {
+    setRoles([...roles, role]);
+  };
+
+  const handleRoleDrag = (role, currPos, newPos) => {
+    const newRoles = roles.slice();
+
+    newRoles.splice(currPos, 1);
+    newRoles.splice(newPos, 0, role);
+
+    // re-render
+    setRoles(newRoles);
+  };
+
+  const handleRoleClick = (index) => {
+    console.log("The tag at index " + index + " was clicked");
+  };
+
+  console.log("roles", roles);
 
   return (
     <Flex
@@ -536,7 +640,7 @@ const CreateProject = () => {
             <Heading fontSize="24px" mb="64px">
               プロジェクトを作成しよう
             </Heading>
-            <InputGroup as="form" onSubmit={handleSubmit} w="100%">
+            <InputGroup as="form" w="100%">
               <Flex direction="column" w="100%">
                 <Flex w="100%" justifyContent="space-between" mb="32px">
                   <Flex w="200px" alignItems="center">
@@ -546,6 +650,7 @@ const CreateProject = () => {
                     <Badge colorScheme="red">必須</Badge>
                   </Flex>
                   <Input
+                    _focus={handleEditorUnFocus}
                     w="700px"
                     type="text"
                     placeholder="作りたいものが表現できるタイトルを付けてみましょう"
@@ -564,6 +669,7 @@ const CreateProject = () => {
                   </Flex>
                   <Textarea
                     resize="none"
+                    _focus={handleEditorUnFocus}
                     value={summary}
                     onChange={(e) => setSummary(e.target.value)}
                     w="700px"
@@ -589,7 +695,7 @@ const CreateProject = () => {
                       h="460px"
                       w="700px"
                       src={preview}
-                      onClick={onClick}
+                      onClick={onClickThumbnailPreview}
                       bg="gray.100"
                       alt="project-thumbnail"
                       cursor="pointer"
@@ -597,7 +703,7 @@ const CreateProject = () => {
                     />
                   ) : (
                     <Center
-                      onClick={onClick}
+                      onClick={onClickThumbnailPreview}
                       borderRadius="xl"
                       h="460px"
                       w="700px"
@@ -656,6 +762,7 @@ const CreateProject = () => {
                     top="0"
                     border="1px solid gray"
                     borderColor="gray.300"
+                    onClick={handleEditorFocus}
                   >
                     <Flex
                       w="100%"
@@ -732,42 +839,6 @@ const CreateProject = () => {
                           onClick={handleH2}
                         />
                       )}
-                      <IconButton
-                        cursor="pointer"
-                        bg="white"
-                        p="8px"
-                        as={AiOutlineBold}
-                        h="39px"
-                        w="39px"
-                        onClick={handleBold}
-                      />
-                      <IconButton
-                        cursor="pointer"
-                        bg="white"
-                        p="8px"
-                        as={AiOutlineUnderline}
-                        h="39px"
-                        w="39px"
-                        onClick={handleUnderline}
-                      />
-                      <IconButton
-                        cursor="pointer"
-                        bg="white"
-                        p="8px"
-                        as={AiOutlineStrikethrough}
-                        h="39px"
-                        w="39px"
-                        onClick={handleStrikethrough}
-                      />
-                      <IconButton
-                        cursor="pointer"
-                        bg="white"
-                        p="8px"
-                        as={AiOutlineItalic}
-                        h="39px"
-                        w="39px"
-                        onClick={handleItalic}
-                      />
                       {unorderedlistOpen ? (
                         <IconButton
                           cursor="pointer"
@@ -856,6 +927,42 @@ const CreateProject = () => {
                         cursor="pointer"
                         bg="white"
                         p="8px"
+                        as={AiOutlineBold}
+                        h="39px"
+                        w="39px"
+                        onClick={handleBold}
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineUnderline}
+                        h="39px"
+                        w="39px"
+                        onClick={handleUnderline}
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineStrikethrough}
+                        h="39px"
+                        w="39px"
+                        onClick={handleStrikethrough}
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
+                        as={AiOutlineItalic}
+                        h="39px"
+                        w="39px"
+                        onClick={handleItalic}
+                      />
+                      <IconButton
+                        cursor="pointer"
+                        bg="white"
+                        p="8px"
                         as={AiOutlineLink}
                         h="39px"
                         w="39px"
@@ -890,12 +997,73 @@ const CreateProject = () => {
                 </Flex>
                 <Divider my="32px" />
                 <Box pb="96px">
-                  <Button disabled={title === "" && true} type="submit">
-                    プロジェクト作成
+                  <Button
+                    disabled={title === "" && true}
+                    onClick={onOpen}
+                    // onClick={handleSubmit}
+                  >
+                    公開設定
                   </Button>
                 </Box>
               </Flex>
             </InputGroup>
+            <Modal isCentered isOpen={isOpen} onClose={onClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Flex direction="column" bg="white" p="24px">
+                    <Flex justifyContent="center" mb="16px">
+                      <Heading fontSize="32px">公開設定</Heading>
+                    </Flex>
+                    <Flex direction="column" mb="32px">
+                      <Text fontWeight="bold" mb="8px">
+                        関連タグ
+                      </Text>
+                      <Flex direction="column" w="100%" bg="gray.100">
+                        <DndProvider backend={HTML5Backend}>
+                          <ReactTags
+                            tags={tags}
+                            suggestions={tagSuggestions}
+                            delimiters={delimiters}
+                            handleDelete={handleTagDelete}
+                            handleAddition={handleTagAddition}
+                            handleDrag={handleTagDrag}
+                            handleTagClick={handleTagClick}
+                            inputFieldPosition="bottom"
+                            autocomplete
+                          />
+                        </DndProvider>
+                      </Flex>
+                    </Flex>
+                    <Flex direction="column">
+                      <Text fontWeight="bold" mb="8px">
+                        必要な役割
+                      </Text>
+                      <Flex direction="column" w="100%" bg="gray.100">
+                        <DndProvider backend={HTML5Backend}>
+                          <ReactTags
+                            tags={roles}
+                            delimiters={delimiters}
+                            handleDelete={handleRoleDelete}
+                            handleAddition={handleRoleAddition}
+                            handleDrag={handleRoleDrag}
+                            handleTagClick={handleRoleClick}
+                            inputFieldPosition="bottom"
+                            autocomplete
+                          />
+                        </DndProvider>
+                      </Flex>
+                    </Flex>
+                    <FormControl as="form" onSubmit={handleSubmit}>
+                      <Flex direction="column" mt="16px">
+                        <Button type="submit">プロジェクト作成</Button>
+                      </Flex>
+                    </FormControl>
+                  </Flex>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           </>
         ) : (
           <>

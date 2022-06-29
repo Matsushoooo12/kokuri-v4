@@ -13,7 +13,12 @@ import { AiOutlinePlus } from "react-icons/ai";
 
 const SearchContainer = () => {
   return (
-    <Flex minW="300px" h="100vh" borderLeft="1px solid black">
+    <Flex
+      minW="350px"
+      h="100vh"
+      borderLeft="1px solid black"
+      justifyContent="center"
+    >
       <Flex direction="column" mx="30px">
         <InputGroup mt="50px">
           <Input borderRadius="xl" placeholder="キーワードで検索" />
