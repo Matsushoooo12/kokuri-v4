@@ -115,14 +115,16 @@ const Sidebar = () => {
           <Flex
             p="20px"
             _hover={
-              uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects`
+              uri ===
+              `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}/projects`
                 ? { bg: "teal.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             w="100%"
-            onClick={() => router.push("/projects")}
+            onClick={() => router.push(`/users/${user.uid}/projects`)}
             bg={
-              uri === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects` &&
+              uri ===
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}/projects` &&
               "teal.100"
             }
           >
@@ -262,17 +264,17 @@ const Sidebar = () => {
               p="18px"
               _hover={
                 uri ===
-                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.displayName}`
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.displayName}`
                   ? { bg: "teal.100", cursor: "default" }
                   : { bg: "gray.100", cursor: "pointer" }
               }
               w="100%"
               bg={
                 uri ===
-                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user.uid}` &&
+                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}` &&
                 "teal.100"
               }
-              onClick={() => router.push(`/users/${user.uid}`)}
+              onClick={() => router.push(`/users/${user?.uid}`)}
             >
               <Avatar src={user.photoURL} w="32px" h="32px" />
               <Text

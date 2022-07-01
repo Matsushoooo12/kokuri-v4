@@ -98,6 +98,7 @@ const DetailUser = () => {
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <Button onClick={handleSignOut}>ログアウト</Button>
     </Flex>
   );
 };

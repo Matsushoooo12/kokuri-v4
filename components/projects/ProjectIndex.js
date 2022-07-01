@@ -13,11 +13,7 @@ import { IoMdBuild } from "react-icons/io";
 import { MdOutlineBookmarkBorder } from "react-icons/md";
 import { RiShieldUserLine } from "react-icons/ri";
 import { db } from "../../firebase/config";
-import {
-  useCollection,
-  useCollectionData,
-  useDocumentData,
-} from "react-firebase-hooks/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
 import { convertFromRaw, EditorState } from "draft-js";
 import dynamic from "next/dynamic";

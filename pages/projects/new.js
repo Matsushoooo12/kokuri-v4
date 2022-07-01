@@ -1002,7 +1002,7 @@ const CreateProject = () => {
                     onClick={onOpen}
                     // onClick={handleSubmit}
                   >
-                    公開設定
+                    公開する
                   </Button>
                 </Box>
               </Flex>
