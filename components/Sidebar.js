@@ -1,4 +1,4 @@
-import { Avatar, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
+import { Avatar, Flex, Heading, Icon, Text } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -28,6 +28,24 @@ const Sidebar = () => {
 
   let uri = window.location.href;
   uri = decodeURI(uri);
+
+  const homeUrl = (url) => {
+    if (url === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
+      return true;
+    } else if (url === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}?tab=projects`) {
+      return true;
+    } else if (url === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}?tab=users`) {
+      return true;
+    }
+  };
+
+  const messageUrl = (url) => {
+    if (url.indexOf(`${process.env.NEXT_PUBLIC_ROOT_DOMAIN}messages`) != -1) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   return (
     <Flex
@@ -60,16 +78,13 @@ const Sidebar = () => {
             p="20px"
             w="100%"
             _hover={
-              window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN
+              homeUrl(window.location.href)
                 ? { bg: "teal.100", cursor: "default" }
                 : { bg: "gray.100", cursor: "pointer" }
             }
             alignItems="center"
             onClick={() => router.push("/")}
-            bg={
-              window.location.href === process.env.NEXT_PUBLIC_ROOT_DOMAIN &&
-              "teal.100"
-            }
+            bg={homeUrl(window.location.href) && "teal.100"}
           >
             <Icon as={AiOutlineHome} fontSize="28px" alignSelf="center" />
             <Text
@@ -172,8 +187,14 @@ const Sidebar = () => {
         >
           <Flex
             p="20px"
-            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            _hover={
+              messageUrl(window.location.href)
+                ? { bg: "teal.100", cursor: "default" }
+                : { bg: "gray.100", cursor: "pointer" }
+            }
             w="100%"
+            onClick={() => router.push("/messages")}
+            bg={messageUrl(window.location.href) && "teal.100"}
           >
             <Icon ml="2px" as={FiMail} fontSize="24px" alignSelf="center" />
             <Text
@@ -264,7 +285,7 @@ const Sidebar = () => {
               p="18px"
               _hover={
                 uri ===
-                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.displayName}`
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}`
                   ? { bg: "teal.100", cursor: "default" }
                   : { bg: "gray.100", cursor: "pointer" }
               }

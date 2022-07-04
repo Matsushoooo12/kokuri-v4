@@ -7,7 +7,7 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { collection, orderBy, query } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import React from "react";
 import { IoMdBuild } from "react-icons/io";
 import { MdOutlineBookmarkBorder } from "react-icons/md";
@@ -15,17 +15,9 @@ import { RiShieldUserLine } from "react-icons/ri";
 import { db } from "../../firebase/config";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
-import { convertFromRaw, EditorState } from "draft-js";
-import dynamic from "next/dynamic";
-
-const Editor = dynamic(import("../../components/Editor/index"), { ssr: false });
 
 const ProjectIndex = () => {
-  // const projectQuery = query(collection(db, "projects"), orderBy("timestamp"));
-  // const [projects] = useCollectionData(projectQuery);
-  // console.log("projects", projects);
-
-  const [snapshot, loading, error] = useCollection(collection(db, "projects"));
+  const [snapshot] = useCollection(collection(db, "projects"));
   const projects = snapshot?.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   console.log("projects", projects);
@@ -79,15 +71,23 @@ const ProjectIndex = () => {
                 <Flex>
                   <Flex alignItems="center">
                     <Text mr="8px" fontSize="12px">
-                      2
+                      {project?.members ? <>{project?.members.length}</> : 0}
                     </Text>
                     <Icon fontSize="20px" as={RiShieldUserLine} />
                   </Flex>
                   <Flex alignItems="center" ml="20px">
                     <Text mr="8px" fontSize="12px">
-                      2
+                      {project?.likeUsers ? (
+                        <>{project.likeUsers?.length}</>
+                      ) : (
+                        0
+                      )}
                     </Text>
-                    <Icon fontSize="20px" as={MdOutlineBookmarkBorder} />
+                    <Icon
+                      fontSize="20px"
+                      color="red.300"
+                      as={MdOutlineBookmarkBorder}
+                    />
                   </Flex>
                 </Flex>
               </Flex>
@@ -101,7 +101,11 @@ const ProjectIndex = () => {
               <Box fontSize="14px" mb="16px">
                 {project.summary}
               </Box>
-              <Flex alignItems="center" mb="16px">
+              <Flex
+                alignItems="center"
+                mb="16px"
+                onClick={() => router.push(`/users/${project.user?.uid}`)}
+              >
                 <Avatar src={project.user.avatar} w="36px" h="36px" mr="8px" />
                 <Flex direction="column">
                   <Text fontSize="12px" fontWeight="bold">

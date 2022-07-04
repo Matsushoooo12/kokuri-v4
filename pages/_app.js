@@ -6,6 +6,7 @@ import "../styles/globals.css";
 import Sidebar from "../components/Sidebar";
 import { auth } from "../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
+import MessageListBar from "../components/MessageListBar";
 
 export const AuthContext = React.createContext({});
 
@@ -18,6 +19,14 @@ const MyApp = ({ Component, pageProps }) => {
       url.indexOf(`${process.env.NEXT_PUBLIC_ROOT_DOMAIN}login`) != -1 ||
       url.indexOf(`${process.env.NEXT_PUBLIC_ROOT_DOMAIN}signup`) != -1
     ) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const messageUrl = (url) => {
+    if (url.indexOf(`${process.env.NEXT_PUBLIC_ROOT_DOMAIN}messages`) != -1) {
       return true;
     } else {
       return false;
@@ -59,7 +68,16 @@ const MyApp = ({ Component, pageProps }) => {
           <Flex>
             <Sidebar />
             <MainContainer>
-              <Component {...pageProps} />
+              {messageUrl(window.location.href) ? (
+                <Flex w="100%">
+                  <MessageListBar />
+                  <Flex flex={1} h="100vh">
+                    <Component {...pageProps} />
+                  </Flex>
+                </Flex>
+              ) : (
+                <Component {...pageProps} />
+              )}
             </MainContainer>
             <SearchContainer />
           </Flex>

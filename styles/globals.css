@@ -55,6 +55,12 @@ a {
   color: gray;
 }
 
+.image {
+  width: 200px;
+  height: 100px;
+  background-color: red;
+}
+
 .ReactTags__tags {
   background-color: #eee;
   padding: 16px;

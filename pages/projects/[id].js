@@ -1,23 +1,25 @@
-import { Box, Flex, Heading, HStack, Image, Text } from "@chakra-ui/react";
-// import {
-//   ContentState,
-//   convertFromRaw,
-//   convertToRaw,
-//   EditorState,
-// } from "draft-js";
-import draftToHtml from "draftjs-to-html";
-import { collection, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import {
+  Box,
+  Center,
+  Flex,
+  Heading,
+  HStack,
+  IconButton,
+  Image,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
+import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import React from "react";
-import {
-  useCollection,
-  useCollectionOnce,
-  useDocumentData,
-} from "react-firebase-hooks/firestore";
-import { db } from "../../firebase/config";
-import { convertFromRaw, Editor as DraftEditor, EditorState } from "draft-js";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { auth, db } from "../../firebase/config";
+import { convertFromRaw, EditorState } from "draft-js";
 import "draft-js/dist/Draft.css";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { RiLoginBoxLine } from "react-icons/ri";
+import { MdOutlineBookmarkBorder } from "react-icons/md";
 
 const Editor = dynamic(import("../../components/Editor/index"), { ssr: false });
 
@@ -25,6 +27,34 @@ const DetailProject = () => {
   const router = useRouter();
   const { id } = router.query;
   const [project] = useDocumentData(doc(db, "projects", id));
+  const [user] = useAuthState(auth);
+  const [loading, setLoading] = React.useState(true);
+
+  const handleCreateBookmark = async () => {
+    const projectRef = await doc(db, "projects", id);
+    await updateDoc(projectRef, {
+      likeUsers: arrayUnion(user.uid),
+    });
+  };
+
+  const handleRemoveBookmark = async () => {
+    const projectRef = await doc(db, "projects", id);
+    await updateDoc(projectRef, {
+      likeUsers: arrayRemove(user.uid),
+    });
+  };
+
+  React.useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Spinner />
+      </Center>
+    );
+  }
 
   return (
     <Flex
@@ -40,6 +70,32 @@ const DetailProject = () => {
       <Heading fontSize="24px" mb="24px">
         {project?.title}
       </Heading>
+      <HStack spacing="32px">
+        <Flex alignItems="center">
+          <IconButton
+            //   disabled={project?.likeUsers?.includes(user?.uid)}
+            bg={
+              project?.likeUsers?.includes(user?.uid) ? "gray.100" : "teal.100"
+            }
+            onClick={
+              project?.likeUsers?.includes(user?.uid)
+                ? handleRemoveBookmark
+                : handleCreateBookmark
+            }
+            as={MdOutlineBookmarkBorder}
+            p="8px"
+            mr="8px"
+          >
+            Bookmark
+          </IconButton>
+          <Text>{project?.likeUsers?.length}</Text>
+        </Flex>
+        <IconButton
+          onClick={() => router.push(`/projects/${id}/group`)}
+          p="8px"
+          as={RiLoginBoxLine}
+        />
+      </HStack>
       <Text mb="16px">{project?.summary}</Text>
       <HStack spacing="8px" fontSize="12px" mb="16px">
         {project?.tags?.map((tag) => (

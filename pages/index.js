@@ -47,6 +47,7 @@ export default function Home() {
       <Tabs
         position="relative"
         colorScheme="teal"
+        variant="soft-rounded"
         h="100vh"
         w="100%"
         defaultIndex={tabIndex.current}

@@ -23,6 +23,7 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
+  Spinner,
   Text,
   Textarea,
   useDisclosure,
@@ -52,8 +53,6 @@ import {
 import dynamic from "next/dynamic";
 import { convertFromRaw, convertToRaw, EditorState, RichUtils } from "draft-js";
 import { RiParagraph } from "react-icons/ri";
-import draftToHtml from "draftjs-to-html";
-import { BiHeading } from "react-icons/bi";
 import { PROJECT_TAGS } from "../../components/Tag/projectTag";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -278,6 +277,7 @@ const delimiters = [KeyCodes.comma, KeyCodes.enter];
 const CreateProject = () => {
   const [user] = useAuthState(auth);
   const router = useRouter();
+  const [loading, setLoading] = React.useState(true);
   const [editorState, setEditorState] = React.useState(initState);
   const [paragraphOpen, setParagraphOpen] = React.useState(true);
   const [focus, setFocus] = React.useState(false);
@@ -503,14 +503,17 @@ const CreateProject = () => {
             try {
               await addDoc(collection(db, "projects"), {
                 title: title,
+                likeUsers: [],
                 text: JSON.stringify(
                   convertToRaw(editorState.getCurrentContent())
                 ),
                 summary: summary,
                 user: {
+                  uid: user.uid,
                   name: user.displayName,
                   avatar: user.photoURL,
                 },
+                members: [user.uid],
                 tags: tags,
                 roles: roles,
                 thumbnail: url,
@@ -537,37 +540,6 @@ const CreateProject = () => {
   const handleEditorUnFocus = () => {
     setFocus(false);
   };
-
-  // console.log(
-  //   "editorState",
-  //   draftToHtml(convertToRaw(editorState.getCurrentContent()))
-  // );
-
-  console.log("block", convertToRaw(editorState.getCurrentContent()));
-
-  console.log(
-    "json",
-    JSON.stringify(convertToRaw(editorState.getCurrentContent()))
-  );
-
-  console.log("editorState", editorState);
-
-  console.log(
-    "convertFromRow",
-    convertFromRaw(convertToRaw(editorState.getCurrentContent()))
-  );
-
-  const json = JSON.stringify(convertToRaw(editorState.getCurrentContent()));
-  const parse = JSON.parse(json);
-  console.log("parse", parse);
-
-  console.log("json", json);
-
-  const h1Array = convertToRaw(editorState.getCurrentContent()).blocks.filter(
-    (item) => item.type === "header-one"
-  );
-
-  console.log("h1", h1Array);
 
   const editorRef = React.useRef(null);
   React.useEffect(() => {
@@ -623,6 +595,18 @@ const CreateProject = () => {
   };
 
   console.log("roles", roles);
+
+  React.useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <Center h="100vh">
+        <Spinner />
+      </Center>
+    );
+  }
 
   return (
     <Flex
@@ -974,6 +958,7 @@ const CreateProject = () => {
                         as={BsImage}
                         h="39px"
                         w="39px"
+                        // onClick={handleImage}
                       />
                     </Flex>
                     <Box w="100%" h="100%" overflowY="scroll" borderRadius="xl">
