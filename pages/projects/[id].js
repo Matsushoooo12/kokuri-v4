@@ -8,6 +8,7 @@ import {
   Image,
   Spinner,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
@@ -57,25 +58,20 @@ const DetailProject = () => {
   }
 
   return (
-    <Flex
-      w="100%"
-      pt="64px"
-      px="32px"
-      h="100%"
-      overflowX="scroll"
-      className="scrollbar-off"
-      direction="column"
-      alignItems="center"
-    >
-      <Heading fontSize="24px" mb="24px">
-        {project?.title}
-      </Heading>
-      <HStack spacing="32px">
+    <>
+      <VStack
+        spacing="16px"
+        direction="column"
+        position="absolute"
+        right="80px"
+        top="60px"
+        alignItems="flex-start"
+      >
         <Flex alignItems="center">
           <IconButton
-            //   disabled={project?.likeUsers?.includes(user?.uid)}
+            borderRadius="full"
             bg={
-              project?.likeUsers?.includes(user?.uid) ? "gray.100" : "teal.100"
+              project?.likeUsers?.includes(user?.uid) ? "teal.100" : "gray.100"
             }
             onClick={
               project?.likeUsers?.includes(user?.uid)
@@ -85,49 +81,95 @@ const DetailProject = () => {
             as={MdOutlineBookmarkBorder}
             p="8px"
             mr="8px"
-          >
-            Bookmark
-          </IconButton>
-          <Text>{project?.likeUsers?.length}</Text>
+          />
+          <Text fontWeight="bold" fontSize="24px">
+            {project?.likeUsers?.length}
+          </Text>
         </Flex>
         <IconButton
+          borderRadius="full"
           onClick={() => router.push(`/projects/${id}/group`)}
           p="8px"
           as={RiLoginBoxLine}
+          cursor="pointer"
+          bg="teal.100"
         />
-      </HStack>
-      <Text mb="16px">{project?.summary}</Text>
-      <HStack spacing="8px" fontSize="12px" mb="16px">
-        {project?.tags?.map((tag) => (
-          <Text
-            key={Math.random()}
-            borderRadius="full"
-            p="4px 8px"
-            border="1px solid black"
+      </VStack>
+      <Flex
+        w="100%"
+        pt="64px"
+        px="32px"
+        h="100%"
+        overflowX="scroll"
+        className="scrollbar-off"
+        direction="column"
+        alignItems="center"
+      >
+        <Flex w="768px" direction="column" alignItems="center" mb="80px">
+          <Flex alignItems="center" mb="16px">
+            <Heading fontSize="24px" mr="16px">
+              {project?.title}
+            </Heading>
+          </Flex>
+          <Text mb="16px">{project?.summary}</Text>
+          <HStack
+            spacing="32px"
+            mb="16px"
+            alignItems="center"
+            alignSelf="flex-start"
           >
-            {tag.text}
-          </Text>
-        ))}
-      </HStack>
-      <Image
-        objectFit="cover"
-        w="600px"
-        h="400px"
-        src={project?.thumbnail}
-        alt="thumbnail"
-        mb="32px"
-      />
-      {project?.text && (
-        <Box w="700px">
-          <Editor
-            readOnly={true}
-            editorState={EditorState.createWithContent(
-              convertFromRaw(JSON.parse(project?.text))
-            )}
+            <HStack spacing="8px" fontSize="12px" alignSelf="center">
+              <Text>募集役割：</Text>
+              {project?.roles?.map((role) => (
+                <Text
+                  key={Math.random()}
+                  borderRadius="full"
+                  p="4px 8px"
+                  border="1px solid black"
+                >
+                  {role.text}
+                </Text>
+              ))}
+            </HStack>
+          </HStack>
+          <HStack
+            spacing="8px"
+            fontSize="12px"
+            mb="32px"
+            alignSelf="flex-start"
+          >
+            <Text>関連タグ：</Text>
+            {project?.tags?.map((tag) => (
+              <Text
+                key={Math.random()}
+                borderRadius="full"
+                p="4px 8px"
+                border="1px solid black"
+              >
+                {tag.text}
+              </Text>
+            ))}
+          </HStack>
+          <Image
+            objectFit="cover"
+            w="100%"
+            src={project?.thumbnail}
+            alt="thumbnail"
+            mb="56px"
           />
-        </Box>
-      )}
-    </Flex>
+          {project?.text && (
+            <Box w="100%">
+              <Editor
+                readOnly={true}
+                editorState={EditorState.createWithContent(
+                  convertFromRaw(JSON.parse(project?.text))
+                )}
+              />
+            </Box>
+          )}
+        </Flex>
+      </Flex>
+    </>
   );
 };
 

@@ -9,6 +9,7 @@ const MainContainer = ({ children }) => {
       bg="white"
       alignItems="center"
       direction="column"
+      position="relative"
     >
       {children}
     </Flex>

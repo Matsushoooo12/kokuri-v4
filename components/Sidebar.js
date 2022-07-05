@@ -15,6 +15,7 @@ import { AuthContext } from "../pages/_app";
 import { FiLogIn } from "react-icons/fi";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/config";
+import { GiHammerNails } from "react-icons/gi";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -49,7 +50,7 @@ const Sidebar = () => {
 
   return (
     <Flex
-      w={isOpen ? "200px" : "70px"}
+      w={isOpen ? "230px" : "70px"}
       h="100vh"
       bg="white"
       borderRight="1px solid black"
@@ -57,17 +58,36 @@ const Sidebar = () => {
       direction="column"
       transition="all 0.3s ease-in-out"
     >
-      <Heading
-        fontSize="16px"
-        p="14px"
+      <Flex
         mt="20px"
         mb="56px"
-        _hover={{ bg: "gray.100", cursor: "pointer" }}
+        p="20px"
         w="100%"
+        _hover={{ bg: "gray.100", cursor: "pointer" }}
+        alignItems="center"
         onClick={() => router.push("/")}
       >
-        Logo
-      </Heading>
+        <Icon
+          color="teal.500"
+          as={GiHammerNails}
+          fontSize="28px"
+          alignSelf="center"
+        />
+        <Text
+          className="logo"
+          color="teal.500"
+          ml="16px"
+          fontSize="20px"
+          fontWeight="bold"
+          display={isOpen ? "block" : "none"}
+          minW="160px"
+          borderBottom="1px solid black"
+          borderColor="teal.500"
+          pb="4px"
+        >
+          The Creators
+        </Text>
+      </Flex>
       <Flex direction="column" alignItems="flex-start" mb="72px" w="100%">
         <Tooltip
           label="Home"
@@ -303,6 +323,7 @@ const Sidebar = () => {
                 fontSize="20px"
                 fontWeight="bold"
                 display={isOpen ? "block" : "none"}
+                minW="160px"
               >
                 {user.displayName}
               </Text>

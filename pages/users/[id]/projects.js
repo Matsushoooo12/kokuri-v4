@@ -58,7 +58,7 @@ const Projects = () => {
           zIndex="10"
           w="800px"
           pt="32px"
-          justifyContent="space-between"
+          justifyContent="flex-start"
         >
           <Tab>作成したプロジェクト一覧</Tab>
           <Tab>参加プロジェクト一覧</Tab>
@@ -148,7 +148,9 @@ const Projects = () => {
                       <Heading
                         fontSize="20px"
                         mb="8px"
-                        onClick={() => router.push(`/projects/${project.id}`)}
+                        onClick={() =>
+                          router.push(`/projects/${project.id}/group`)
+                        }
                       >
                         {project.title}
                       </Heading>
@@ -195,10 +197,36 @@ const Projects = () => {
           </Flex>
         </TabPanel>
         <TabPanel>
-          <p>two!</p>
+          <Flex w="100%" h="100%" justifyContent="center">
+            <Flex w="800px" h="100%" direction="column" px="24px">
+              <Flex
+                w="100%"
+                h="100%"
+                pb="32px"
+                mb="32px"
+                borderBottom="1px solid #ddd"
+                cursor="pointer"
+              >
+                <p>one!</p>
+              </Flex>
+            </Flex>
+          </Flex>
         </TabPanel>
         <TabPanel>
-          <p>three!</p>
+          <Flex w="100%" h="100%" justifyContent="center">
+            <Flex w="800px" h="100%" direction="column" px="24px">
+              <Flex
+                w="100%"
+                h="100%"
+                pb="32px"
+                mb="32px"
+                borderBottom="1px solid #ddd"
+                cursor="pointer"
+              >
+                <p>two!</p>
+              </Flex>
+            </Flex>
+          </Flex>
         </TabPanel>
       </TabPanels>
     </Tabs>

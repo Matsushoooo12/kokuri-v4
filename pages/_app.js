@@ -71,7 +71,7 @@ const MyApp = ({ Component, pageProps }) => {
               {messageUrl(window.location.href) ? (
                 <Flex w="100%">
                   <MessageListBar />
-                  <Flex flex={1} h="100vh">
+                  <Flex flex={1} h="100vh" minW="560px">
                     <Component {...pageProps} />
                   </Flex>
                 </Flex>

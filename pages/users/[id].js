@@ -40,10 +40,8 @@ const DetailUser = () => {
   const router = useRouter();
   const { id } = router.query;
   const [user] = useDocumentData(doc(db, "users", id));
-  console.log("user", user);
   const [loading, setLoading] = React.useState(true);
   const { currentUser } = React.useContext(AuthContext);
-  console.log("currentUser", currentUser);
 
   const [snapshot] = useCollection(collection(db, "rooms"));
   const rooms = snapshot?.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -52,46 +50,6 @@ const DetailUser = () => {
   const [follows] = useCollectionData(followsQuery);
   const followersQuery = query(collection(db, `users/${id}/followers`));
   const [followers] = useCollectionData(followersQuery);
-
-  console.log("follows", follows);
-  console.log("follwers", followers);
-
-  console.log("rooms", rooms);
-
-  console.log(
-    "e",
-    followers?.find((follower) => follower.uid === currentUser?.uid)
-  );
-
-  // const matchingCheck = () => {
-  //   if (
-  //     follows?.find((follow) => follow.uid === id) &&
-  //     followers?.find((follower) => follower.uid === currentUser?.uid)
-  //   ) {
-  //   }
-  // };
-
-  // const roomExist = (uid) => {
-  //   const room =
-  //     rooms?.find((room) => room.users.includes(currentUser.uid)) &&
-  //     rooms?.find((room) => room.users.includes(uid));
-  //   if (room) {
-  //     return room?.id;
-  //   }
-  // };
-  // const roomExist = (uid) => {
-  //   const room =
-  //     rooms?.find((room) => room.users.map((r) => r.uid === currentUser.uid)) &&
-  //     rooms?.find((room) => room.users.map((r) => r.uid === uid));
-
-  //   if (room) {
-  //     return room?.id;
-  //   }
-  // };
-
-  // const a = rooms?.find((room) =>
-  //   room.users.map((user) => user.uid === currentUser.uid)
-  // );
 
   const roomExist = (uid) => {
     const idUserRoom = rooms?.filter((room) =>
@@ -103,25 +61,6 @@ const DetailUser = () => {
     return room?.id;
   };
 
-  // const idUserRoom = rooms?.filter((room) =>
-  //   room.users?.find((user) => user.uid === id)
-  // );
-  // const a = idUserRoom?.find((room) =>
-  //   room.users.find((user) => user.uid === currentUser.uid)
-  // );
-
-  // console.log("a", a);
-
-  console.log(
-    "b",
-    rooms?.filter((room) => room.users.find((user) => user.uid === id))
-  );
-
-  console.log(
-    "follow_id",
-    follows?.find((follow) => follow.uid === id)
-  );
-
   const handleSignOut = async () => {
     await signOut(auth).then(() => {
       router.push("/");
@@ -132,7 +71,6 @@ const DetailUser = () => {
     e.preventDefault();
     if (!roomExist(id)) {
       await addDoc(collection(db, "rooms"), {
-        // users: [currentUser.uid, id],
         users: [
           {
             uid: currentUser.uid || null,
@@ -184,6 +122,92 @@ const DetailUser = () => {
     await deleteDoc(doc(db, `users/${currentUser.uid}/follows`, id));
   };
 
+  const matching = () => {
+    if (follows?.length && followers?.length) {
+      if (
+        follows?.find((follow) => follow.uid === currentUser?.uid) &&
+        followers?.find((follower) => follower.uid === currentUser?.uid)
+      ) {
+        return "マッチング中";
+      } else if (
+        follows?.find((follow) => follow.uid === currentUser?.uid) &&
+        followers?.find((follower) => follower.uid !== currentUser?.uid)
+      ) {
+        return "マッチングリクエストを許可する";
+      } else if (
+        follows?.find((follow) => follow.uid !== currentUser?.uid) &&
+        followers?.find((follower) => follower.uid === currentUser?.uid)
+      ) {
+        return "マッチングリクエスト中";
+      } else {
+        return "マッチング申請する";
+      }
+    } else if (follows?.length && !followers?.length) {
+      if (follows?.find((follow) => follow.uid === currentUser?.uid)) {
+        return "マッチングリクエストを許可する";
+      } else {
+        return "マッチング申請する";
+      }
+    } else if (!follows?.length && followers?.length) {
+      if (followers?.find((follower) => follower.uid === currentUser?.uid)) {
+        return "マッチングリクエスト中";
+      } else {
+        return "マッチング申請する";
+      }
+    }
+  };
+
+  const followingToggle = () => {
+    if (follows?.length && followers?.length) {
+      if (
+        follows?.find((follow) => follow.uid === currentUser?.uid) &&
+        followers?.find((follower) => follower.uid === currentUser?.uid)
+      ) {
+        return false;
+      } else if (
+        follows?.find((follow) => follow.uid === currentUser?.uid) &&
+        followers?.find((follower) => follower.uid !== currentUser?.uid)
+      ) {
+        return true;
+      } else if (
+        follows?.find((follow) => follow.uid !== currentUser?.uid) &&
+        followers?.find((follower) => follower.uid === currentUser?.uid)
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    } else if (follows?.length && !followers?.length) {
+      if (follows?.find((follow) => follow.uid === currentUser?.uid)) {
+        return true;
+      } else {
+        return true;
+      }
+    } else if (!follows?.length && followers?.length) {
+      if (followers?.find((follower) => follower.uid === currentUser?.uid)) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  };
+
+  const dmButtonToggle = () => {
+    if (follows?.length && followers?.length) {
+      if (
+        follows?.find((follow) => follow.uid === currentUser?.uid) &&
+        followers?.find((follower) => follower.uid === currentUser?.uid)
+      ) {
+        return true;
+      }
+    }
+  };
+
+  console.log(
+    "p",
+    follows?.find((follow) => follow.uid !== currentUser?.uid)
+  );
+
   return (
     <Flex
       w="800px"
@@ -205,7 +229,7 @@ const DetailUser = () => {
               </Text>
               <Icon fontSize="20px" color="red.500" as={ImFire} />
             </Flex>
-            <HStack alignItems="center" spacing="8px" fontSize="12px">
+            <HStack alignItems="center" spacing="8px" fontSize="12px" mr="32px">
               <Text border="1px solid black" p="4px 8px" borderRadius="md">
                 エンジニア
               </Text>
@@ -213,6 +237,14 @@ const DetailUser = () => {
                 デザイナー
               </Text>
             </HStack>
+            {id === currentUser?.uid && (
+              <Button
+                bg="teal.100"
+                onClick={() => router.push("/settings/profile")}
+              >
+                プロフィール編集
+              </Button>
+            )}
           </Flex>
           <Text mb="16px">
             現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
@@ -229,24 +261,22 @@ const DetailUser = () => {
             </Text>
             {id !== currentUser?.uid && (
               <>
-                {followers?.find(
-                  (follower) => follower.uid === currentUser?.uid
-                ) ? (
-                  <Button onClick={handleUnFollow} bg="gray.300">
-                    マッチング申請を外す
-                  </Button>
-                ) : (
-                  <Button onClick={handleFollow} bg="teal.300">
-                    マッチング申請する
-                  </Button>
+                <Button
+                  disabled={dmButtonToggle()}
+                  onClick={followingToggle() ? handleFollow : handleUnFollow}
+                  bg="gray.300"
+                >
+                  {matching()}
+                </Button>
+                {dmButtonToggle() && (
+                  <IconButton p="8px" onClick={handleCreateDm} as={FiMail} />
                 )}
-                <IconButton p="8px" onClick={handleCreateDm} as={FiMail} />
               </>
             )}
           </HStack>
         </Flex>
       </Flex>
-      <Tabs w="100%" h="100%" colorScheme="teal">
+      <Tabs w="100%" h="100%" colorScheme="teal" variant="soft-rounded">
         <TabList w="500px">
           <Tab>スキル</Tab>
           <Tab>経歴</Tab>
