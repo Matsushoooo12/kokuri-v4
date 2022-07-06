@@ -7,6 +7,8 @@ import Sidebar from "../components/Sidebar";
 import { auth } from "../firebase/config";
 import { onAuthStateChanged } from "firebase/auth";
 import MessageListBar from "../components/MessageListBar";
+import { Chart, ArcElement } from "chart.js";
+Chart.register(ArcElement);
 
 export const AuthContext = React.createContext({});
 
