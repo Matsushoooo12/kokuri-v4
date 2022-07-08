@@ -4,7 +4,7 @@ const MainContainer = ({ children }) => {
   return (
     <Flex
       flex={1}
-      justifyContent="center"
+      // justifyContent="center"
       h="100vh"
       bg="white"
       alignItems="center"

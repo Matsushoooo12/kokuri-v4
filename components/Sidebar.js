@@ -1,4 +1,4 @@
-import { Avatar, Flex, Heading, Icon, Text } from "@chakra-ui/react";
+import { Avatar, Flex, Icon, Text } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -180,14 +180,25 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         <Tooltip
-          label="users"
+          label="matching"
           display={isOpen ? "none" : "block"}
           placement="right"
         >
           <Flex
             p="20px"
-            _hover={{ bg: "gray.100", cursor: "pointer" }}
+            _hover={
+              uri ===
+              `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}/matching`
+                ? { bg: "teal.100", cursor: "default" }
+                : { bg: "gray.100", cursor: "pointer" }
+            }
             w="100%"
+            onClick={() => router.push(`/users/${user.uid}/matching`)}
+            bg={
+              uri ===
+                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}/matching` &&
+              "teal.100"
+            }
           >
             <Icon ml="2px" as={BiUser} fontSize="24px" alignSelf="center" />
             <Text
@@ -196,7 +207,7 @@ const Sidebar = () => {
               fontWeight="bold"
               display={isOpen ? "block" : "none"}
             >
-              users
+              Matching
             </Text>
           </Flex>
         </Tooltip>

@@ -18,7 +18,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useRef } from "react";
 import {
   useCollectionData,
   useDocumentData,
@@ -36,6 +36,8 @@ const DetailMessages = () => {
   const { currentUser } = React.useContext(AuthContext);
   const q = query(collection(db, `rooms/${id}/messages`), orderBy("timestamp"));
   const [messages] = useCollectionData(q);
+  const scrollRef = useRef(null);
+  console.log("scrollRef", scrollRef.current?.scrollTop);
   const sendMessage = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, `rooms/${id}/messages`), {
@@ -49,6 +51,12 @@ const DetailMessages = () => {
     });
     setInput("");
   };
+
+  React.useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current?.scrollHeight + 16;
+    }
+  }, [messages]);
 
   const getMessages = () => {
     return (
@@ -126,6 +134,7 @@ const DetailMessages = () => {
         pt="16px"
         pb="16px"
         className="scrollbar-off"
+        ref={scrollRef}
       >
         {getMessages()}
       </Flex>

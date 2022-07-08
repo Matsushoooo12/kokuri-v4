@@ -19,7 +19,6 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { AuthContext } from "../pages/_app";
 import { useRouter } from "next/router";
 import { BsCircleFill } from "react-icons/bs";
 
@@ -39,7 +38,6 @@ const SearchContainer = () => {
     id: doc.id,
     ...doc.data(),
   }));
-  const { currentUser } = React.useContext(AuthContext);
   console.log("rooms", rooms);
   const homeUrl = (url) => {
     if (url === process.env.NEXT_PUBLIC_ROOT_DOMAIN) {
@@ -63,6 +61,8 @@ const SearchContainer = () => {
       h="100vh"
       borderLeft="1px solid black"
       justifyContent="center"
+      zIndex="50"
+      bg="white"
     >
       <Flex direction="column" w="100%" mx="30px">
         <InputGroup mt="50px">
@@ -282,7 +282,7 @@ const SearchContainer = () => {
               <Heading fontSize="16px" mb="16px">
                 目次
               </Heading>
-              <Flex alignItems="center" mb="4px">
+              <Flex alignItems="center" mb="4px" cursor="pointer">
                 <Icon
                   color="teal.500"
                   fontSize="12px"
@@ -294,11 +294,11 @@ const SearchContainer = () => {
               <Divider
                 orientation="vertical"
                 h="24px"
-                ml="8px"
+                ml="5.5px"
                 variant="dashed"
                 mb="4px"
               />
-              <Flex alignItems="center" mb="4px">
+              <Flex alignItems="center" mb="4px" cursor="pointer">
                 <Icon
                   fontSize="12px"
                   color="teal.500"
@@ -310,11 +310,11 @@ const SearchContainer = () => {
               <Divider
                 orientation="vertical"
                 h="24px"
-                ml="8px"
+                ml="5.5px"
                 variant="dashed"
                 mb="4px"
               />
-              <Flex alignItems="center">
+              <Flex alignItems="center" cursor="pointer">
                 <Icon
                   fontSize="12px"
                   color="teal.500"
@@ -328,11 +328,11 @@ const SearchContainer = () => {
               <Divider
                 orientation="vertical"
                 h="24px"
-                ml="8px"
+                ml="5.5px"
                 variant="dashed"
                 mb="4px"
               />
-              <Flex alignItems="center">
+              <Flex alignItems="center" cursor="pointer">
                 <Icon
                   fontSize="12px"
                   color="teal.500"
@@ -344,11 +344,11 @@ const SearchContainer = () => {
               <Divider
                 orientation="vertical"
                 h="24px"
-                ml="8px"
+                ml="5.5px"
                 variant="dashed"
                 mb="4px"
               />
-              <Flex alignItems="center">
+              <Flex alignItems="center" cursor="pointer">
                 <Icon
                   fontSize="12px"
                   color="teal.500"
