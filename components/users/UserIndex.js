@@ -1,38 +1,24 @@
-import {
-  Avatar,
-  Box,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  Image,
-  Text,
-} from "@chakra-ui/react";
+import { Avatar, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import React from "react";
-import { IoMdBuild } from "react-icons/io";
-import { MdOutlineBookmarkBorder } from "react-icons/md";
-import { RiShieldUserLine } from "react-icons/ri";
 import { ImFire } from "react-icons/im";
-import { collection, orderBy, query } from "firebase/firestore";
+import { collection } from "firebase/firestore";
 import { db } from "../../firebase/config";
-import {
-  useCollection,
-  useCollectionData,
-} from "react-firebase-hooks/firestore";
+import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
 
 const UserIndex = () => {
   // const userQuery = query(collection(db, "users"), orderBy("timestamp"));
   // const [users] = useCollectionData(userQuery);
   // console.log(users);
-  const [snapshot, loading, error] = useCollection(collection(db, "users"));
+  const [snapshot] = useCollection(collection(db, "users"));
   const users = snapshot?.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   const router = useRouter();
+  console.log("users1", users);
   return (
     <Flex w="100%" h="100%" justifyContent="center">
       <Flex w="800px" h="100%" direction="column" px="24px">
-        {/* Projectカード一覧 */}
+        {/* Userカード一覧 */}
         {users?.map((user) => (
           <Flex
             key={user.id}

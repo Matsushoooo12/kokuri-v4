@@ -1,13 +1,21 @@
 import {
   Box,
+  Button,
   Center,
   Flex,
   Heading,
   HStack,
   IconButton,
   Image,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
   Spinner,
   Text,
+  Textarea,
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
@@ -21,6 +29,7 @@ import "draft-js/dist/Draft.css";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { RiLoginBoxLine } from "react-icons/ri";
 import { MdOutlineBookmarkBorder } from "react-icons/md";
+import { BiPaperPlane } from "react-icons/bi";
 
 const Editor = dynamic(import("../../components/Editor/index"), { ssr: false });
 
@@ -30,6 +39,7 @@ const DetailProject = () => {
   const [project] = useDocumentData(doc(db, "projects", id));
   const [user] = useAuthState(auth);
   const [loading, setLoading] = React.useState(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleCreateBookmark = async () => {
     const projectRef = await doc(db, "projects", id);
@@ -86,14 +96,25 @@ const DetailProject = () => {
             {project?.likeUsers?.length}
           </Text>
         </Flex>
-        <IconButton
-          borderRadius="full"
-          onClick={() => router.push(`/projects/${id}/group`)}
-          p="8px"
-          as={RiLoginBoxLine}
-          cursor="pointer"
-          bg="teal.100"
-        />
+        {project?.members.includes(user?.uid) ? (
+          <IconButton
+            borderRadius="full"
+            onClick={() => router.push(`/projects/${id}/group`)}
+            p="8px"
+            as={RiLoginBoxLine}
+            cursor="pointer"
+            bg="teal.100"
+          />
+        ) : (
+          <IconButton
+            borderRadius="full"
+            onClick={onOpen}
+            p="8px"
+            as={BiPaperPlane}
+            cursor="pointer"
+            bg="teal.100"
+          />
+        )}
       </VStack>
       <Flex
         w="100%"
@@ -106,7 +127,7 @@ const DetailProject = () => {
         alignItems="center"
       >
         <Flex w="768px" direction="column" alignItems="center" mb="80px">
-          <Flex alignItems="center" mb="16px">
+          <Flex alignItems="center" mb="16px" alignSelf="flex-start">
             <Heading fontSize="24px" mr="16px">
               {project?.title}
             </Heading>
@@ -169,6 +190,27 @@ const DetailProject = () => {
           )}
         </Flex>
       </Flex>
+      <Modal isCentered isOpen={isOpen} onClose={onClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+          <ModalBody my="40px">
+            <Flex mb="16px" fontWeight="bold" fontSize="24px">
+              参加希望メッセージを送る
+            </Flex>
+            <Textarea
+              resize="none"
+              fontSize="16px"
+              fontWeight="bold"
+              placeholder="テーマに沿って自分を表現してみましょう"
+              type="text"
+              h="100px"
+              mb="24px"
+            />
+            <Button w="100%">送信</Button>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

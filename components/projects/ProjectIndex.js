@@ -15,12 +15,15 @@ import { RiShieldUserLine } from "react-icons/ri";
 import { db } from "../../firebase/config";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
+import dayjs from "dayjs";
 
 const ProjectIndex = () => {
   const [snapshot] = useCollection(collection(db, "projects"));
   const projects = snapshot?.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   console.log("projects", projects);
+  const now = dayjs();
+  console.log("dayjs", dayjs().format("YYYY/MM/DD"));
 
   const router = useRouter();
   return (

@@ -1,4 +1,16 @@
-import { Avatar, Flex, Icon, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Flex,
+  Icon,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineHome } from "react-icons/ai";
 import { IoMdNotificationsOutline } from "react-icons/io";
@@ -16,6 +28,7 @@ import { FiLogIn } from "react-icons/fi";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../firebase/config";
 import { GiHammerNails } from "react-icons/gi";
+import { signOut } from "firebase/auth";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -46,6 +59,38 @@ const Sidebar = () => {
     } else {
       return false;
     }
+  };
+
+  const myUserUrl = (url) => {
+    if (url === `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}`) {
+      return true;
+    } else if (
+      url ===
+      `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}?tab=skils`
+    ) {
+      return true;
+    } else if (
+      url ===
+      `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}?tab=history`
+    ) {
+      return true;
+    } else if (
+      url ===
+      `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}?tab=works`
+    ) {
+      return true;
+    } else if (
+      url ===
+      `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}?tab=introduction`
+    ) {
+      return true;
+    }
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth).then(() => {
+      router.push("/");
+    });
   };
 
   return (
@@ -307,39 +352,83 @@ const Sidebar = () => {
           </Flex>
         </Tooltip>
         {currentUser ? (
-          <Tooltip
-            label="Edit profile"
-            display={isOpen ? "none" : "block"}
-            placement="right"
-          >
-            <Flex
-              p="18px"
-              _hover={
-                uri ===
-                `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}`
-                  ? { bg: "teal.100", cursor: "default" }
-                  : { bg: "gray.100", cursor: "pointer" }
-              }
-              w="100%"
-              bg={
-                uri ===
-                  `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}users/${user?.uid}` &&
-                "teal.100"
-              }
-              onClick={() => router.push(`/users/${user?.uid}`)}
+          <>
+            <Tooltip
+              label="Edit profile"
+              display={isOpen ? "none" : "block"}
+              placement="right"
             >
-              <Avatar src={user.photoURL} w="32px" h="32px" />
-              <Text
-                ml="16px"
-                fontSize="20px"
-                fontWeight="bold"
-                display={isOpen ? "block" : "none"}
-                minW="160px"
-              >
-                {user.displayName}
-              </Text>
-            </Flex>
-          </Tooltip>
+              <Popover placement="right">
+                <PopoverTrigger>
+                  <Flex
+                    p="18px"
+                    _hover={
+                      myUserUrl(window.location.href)
+                        ? { bg: "teal.100", cursor: "default" }
+                        : { bg: "gray.100", cursor: "pointer" }
+                    }
+                    w="100%"
+                    bg={myUserUrl(window.location.href) && "teal.100"}
+                    // onClick={() => router.push(`/users/${user?.uid}`)}
+                  >
+                    <Avatar src={user.photoURL} w="32px" h="32px" />
+                    <Text
+                      ml="16px"
+                      fontSize="20px"
+                      fontWeight="bold"
+                      display={isOpen ? "block" : "none"}
+                      minW="160px"
+                    >
+                      {user.displayName}
+                    </Text>
+                  </Flex>
+                </PopoverTrigger>
+                <PopoverContent w="200px" h="100%" bg="white">
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <Flex
+                      w="100%"
+                      h="100%"
+                      p="4px 8px"
+                      // bg="red.100"
+                      borderBottom="1px solid black"
+                      borderColor="gray.300"
+                      mb="8px"
+                    >
+                      <Text fontWeight="bold">{currentUser.username}</Text>
+                    </Flex>
+                    <VStack
+                      spacing="4px"
+                      alignItems="flex-start"
+                      p="4px 8px"
+                      fontSize="14px"
+                    >
+                      <Text
+                        cursor="pointer"
+                        onClick={() => router.push(`/users/${user?.uid}`)}
+                      >
+                        プロフィール詳細
+                      </Text>
+                      <Text
+                        cursor="pointer"
+                        onClick={() =>
+                          router.push(`/users/${user?.uid}/new-works`)
+                        }
+                      >
+                        作品投稿
+                      </Text>
+                      <Text cursor="pointer">設定</Text>
+                      <Text cursor="pointer">ヘルプ</Text>
+                      <Text cursor="pointer" onClick={handleSignOut}>
+                        ログアウト
+                      </Text>
+                    </VStack>
+                  </PopoverBody>
+                </PopoverContent>
+              </Popover>
+            </Tooltip>
+          </>
         ) : (
           <>
             <Tooltip

@@ -21,7 +21,6 @@ import {
 } from "react-firebase-hooks/firestore";
 import { ImFire } from "react-icons/im";
 import { db } from "../../../firebase/config";
-import { AuthContext } from "../../_app";
 
 const Projects = () => {
   const router = useRouter();
@@ -86,285 +85,336 @@ const Projects = () => {
         <TabPanel>
           <Flex w="100%" h="100%" justifyContent="center">
             <Flex w="800px" h="100%" direction="column" px="24px">
-              {users
-                ?.filter(
-                  (user) =>
-                    user.id ===
-                      followers?.find((follower) => follower.uid === user.id)
-                        ?.uid &&
-                    user.id ===
-                      follows?.find((follow) => follow.uid === user.id)?.uid
-                )
-                .map((user) => (
-                  <Flex
-                    key={user.id}
-                    w="100%"
-                    h="100%"
-                    mb="32px"
-                    borderBottom="1px solid #ddd"
-                    cursor="pointer"
-                    pb="32px"
-                  >
-                    <Flex mr="24px">
-                      <Avatar
-                        w="60px"
-                        h="60px"
-                        src={user.photoURL}
-                        alt="avatar"
-                      />
-                    </Flex>
-                    <Flex direction="column">
-                      <Flex mb="16px">
-                        <Flex alignItems="center" mr="24px">
-                          <Text
-                            fontSize="20px"
-                            fontWeight="bold"
-                            mr="8px"
-                            onClick={() => router.push(`/users/${user.id}`)}
-                          >
-                            {user.name}
-                          </Text>
-                          <Icon fontSize="20px" color="red.500" as={ImFire} />
+              {users?.filter(
+                (user) =>
+                  user.id ===
+                    followers?.find((follower) => follower.uid === user.id)
+                      ?.uid &&
+                  user.id ===
+                    follows?.find((follow) => follow.uid === user.id)?.uid
+              )?.length ? (
+                <>
+                  {users
+                    ?.filter(
+                      (user) =>
+                        user.id ===
+                          followers?.find(
+                            (follower) => follower.uid === user.id
+                          )?.uid &&
+                        user.id ===
+                          follows?.find((follow) => follow.uid === user.id)?.uid
+                    )
+                    .map((user) => (
+                      <Flex
+                        key={user.id}
+                        w="100%"
+                        h="100%"
+                        mb="32px"
+                        borderBottom="1px solid #ddd"
+                        cursor="pointer"
+                        pb="32px"
+                      >
+                        <Flex mr="24px">
+                          <Avatar
+                            w="60px"
+                            h="60px"
+                            src={user.photoURL}
+                            alt="avatar"
+                          />
                         </Flex>
-                        <HStack
-                          alignItems="center"
-                          spacing="8px"
-                          fontSize="12px"
-                        >
-                          <Text
-                            border="1px solid black"
-                            p="4px 8px"
-                            borderRadius="md"
-                          >
-                            エンジニア
+                        <Flex direction="column">
+                          <Flex mb="16px">
+                            <Flex alignItems="center" mr="24px">
+                              <Text
+                                fontSize="20px"
+                                fontWeight="bold"
+                                mr="8px"
+                                onClick={() => router.push(`/users/${user.id}`)}
+                              >
+                                {user.name}
+                              </Text>
+                              <Icon
+                                fontSize="20px"
+                                color="red.500"
+                                as={ImFire}
+                              />
+                            </Flex>
+                            <HStack
+                              alignItems="center"
+                              spacing="8px"
+                              fontSize="12px"
+                            >
+                              <Text
+                                border="1px solid black"
+                                p="4px 8px"
+                                borderRadius="md"
+                              >
+                                エンジニア
+                              </Text>
+                              <Text
+                                border="1px solid black"
+                                p="4px 8px"
+                                borderRadius="md"
+                              >
+                                デザイナー
+                              </Text>
+                            </HStack>
+                          </Flex>
+                          <Text mb="16px">
+                            現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
                           </Text>
-                          <Text
-                            border="1px solid black"
-                            p="4px 8px"
-                            borderRadius="md"
-                          >
-                            デザイナー
-                          </Text>
-                        </HStack>
+                          <HStack spacing="8px" fontSize="12px">
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              React
+                            </Text>
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              Rails
+                            </Text>
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              HTML
+                            </Text>
+                          </HStack>
+                        </Flex>
                       </Flex>
-                      <Text mb="16px">
-                        現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
-                      </Text>
-                      <HStack spacing="8px" fontSize="12px">
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          React
-                        </Text>
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          Rails
-                        </Text>
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          HTML
-                        </Text>
-                      </HStack>
-                    </Flex>
-                  </Flex>
-                ))}
+                    ))}
+                </>
+              ) : (
+                <Flex>まだ該当するユーザーがいません</Flex>
+              )}
             </Flex>
           </Flex>
         </TabPanel>
         <TabPanel>
           <Flex w="100%" h="100%" justifyContent="center">
             <Flex w="800px" h="100%" direction="column" px="24px">
-              {users
-                ?.filter(
-                  (user) =>
-                    user.id ===
-                      follows?.find((follow) => follow.uid === user.id)?.uid &&
-                    !followers?.find((follower) => follower.uid === user.id)
-                )
-                .map((user) => (
-                  <Flex
-                    key={user.id}
-                    w="100%"
-                    h="100%"
-                    mb="32px"
-                    borderBottom="1px solid #ddd"
-                    cursor="pointer"
-                    pb="32px"
-                  >
-                    <Flex mr="24px">
-                      <Avatar
-                        w="60px"
-                        h="60px"
-                        src={user.photoURL}
-                        alt="avatar"
-                      />
-                    </Flex>
-                    <Flex direction="column">
-                      <Flex mb="16px">
-                        <Flex alignItems="center" mr="24px">
-                          <Text
-                            fontSize="20px"
-                            fontWeight="bold"
-                            mr="8px"
-                            onClick={() => router.push(`/users/${user.id}`)}
-                          >
-                            {user.name}
-                          </Text>
-                          <Icon fontSize="20px" color="red.500" as={ImFire} />
+              {users?.filter(
+                (user) =>
+                  user.id ===
+                    follows?.find((follow) => follow.uid === user.id)?.uid &&
+                  !followers?.find((follower) => follower.uid === user.id)
+              )?.length ? (
+                <>
+                  {users
+                    ?.filter(
+                      (user) =>
+                        user.id ===
+                          follows?.find((follow) => follow.uid === user.id)
+                            ?.uid &&
+                        !followers?.find((follower) => follower.uid === user.id)
+                    )
+                    .map((user) => (
+                      <Flex
+                        key={user.id}
+                        w="100%"
+                        h="100%"
+                        mb="32px"
+                        borderBottom="1px solid #ddd"
+                        cursor="pointer"
+                        pb="32px"
+                      >
+                        <Flex mr="24px">
+                          <Avatar
+                            w="60px"
+                            h="60px"
+                            src={user.photoURL}
+                            alt="avatar"
+                          />
                         </Flex>
-                        <HStack
-                          alignItems="center"
-                          spacing="8px"
-                          fontSize="12px"
-                        >
-                          <Text
-                            border="1px solid black"
-                            p="4px 8px"
-                            borderRadius="md"
-                          >
-                            エンジニア
+                        <Flex direction="column">
+                          <Flex mb="16px">
+                            <Flex alignItems="center" mr="24px">
+                              <Text
+                                fontSize="20px"
+                                fontWeight="bold"
+                                mr="8px"
+                                onClick={() => router.push(`/users/${user.id}`)}
+                              >
+                                {user.name}
+                              </Text>
+                              <Icon
+                                fontSize="20px"
+                                color="red.500"
+                                as={ImFire}
+                              />
+                            </Flex>
+                            <HStack
+                              alignItems="center"
+                              spacing="8px"
+                              fontSize="12px"
+                            >
+                              <Text
+                                border="1px solid black"
+                                p="4px 8px"
+                                borderRadius="md"
+                              >
+                                エンジニア
+                              </Text>
+                              <Text
+                                border="1px solid black"
+                                p="4px 8px"
+                                borderRadius="md"
+                              >
+                                デザイナー
+                              </Text>
+                            </HStack>
+                          </Flex>
+                          <Text mb="16px">
+                            現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
                           </Text>
-                          <Text
-                            border="1px solid black"
-                            p="4px 8px"
-                            borderRadius="md"
-                          >
-                            デザイナー
-                          </Text>
-                        </HStack>
+                          <HStack spacing="8px" fontSize="12px">
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              React
+                            </Text>
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              Rails
+                            </Text>
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              HTML
+                            </Text>
+                          </HStack>
+                        </Flex>
                       </Flex>
-                      <Text mb="16px">
-                        現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
-                      </Text>
-                      <HStack spacing="8px" fontSize="12px">
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          React
-                        </Text>
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          Rails
-                        </Text>
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          HTML
-                        </Text>
-                      </HStack>
-                    </Flex>
-                  </Flex>
-                ))}
+                    ))}
+                </>
+              ) : (
+                <Flex>まだ該当するユーザーがいません</Flex>
+              )}
             </Flex>
           </Flex>
         </TabPanel>
         <TabPanel>
           <Flex w="100%" h="100%" justifyContent="center">
             <Flex w="800px" h="100%" direction="column" px="24px">
-              {users
-                ?.filter(
-                  (user) =>
-                    user.id ===
-                      followers?.find((follower) => follower.uid === user.id)
-                        ?.uid &&
-                    !follows?.find((follow) => follow.uid === user.id)
-                )
-                .map((user) => (
-                  <Flex
-                    key={user.id}
-                    w="100%"
-                    h="100%"
-                    mb="32px"
-                    borderBottom="1px solid #ddd"
-                    cursor="pointer"
-                    pb="32px"
-                  >
-                    <Flex mr="24px">
-                      <Avatar
-                        w="60px"
-                        h="60px"
-                        src={user.photoURL}
-                        alt="avatar"
-                      />
-                    </Flex>
-                    <Flex direction="column">
-                      <Flex mb="16px">
-                        <Flex alignItems="center" mr="24px">
-                          <Text
-                            fontSize="20px"
-                            fontWeight="bold"
-                            mr="8px"
-                            onClick={() => router.push(`/users/${user.id}`)}
-                          >
-                            {user.name}
-                          </Text>
-                          <Icon fontSize="20px" color="red.500" as={ImFire} />
+              {users?.filter(
+                (user) =>
+                  user.id ===
+                    followers?.find((follower) => follower.uid === user.id)
+                      ?.uid &&
+                  !follows?.find((follow) => follow.uid === user.id)
+              )?.length ? (
+                <>
+                  {users
+                    ?.filter(
+                      (user) =>
+                        user.id ===
+                          followers?.find(
+                            (follower) => follower.uid === user.id
+                          )?.uid &&
+                        !follows?.find((follow) => follow.uid === user.id)
+                    )
+                    .map((user) => (
+                      <Flex
+                        key={user.id}
+                        w="100%"
+                        h="100%"
+                        mb="32px"
+                        borderBottom="1px solid #ddd"
+                        cursor="pointer"
+                        pb="32px"
+                      >
+                        <Flex mr="24px">
+                          <Avatar
+                            w="60px"
+                            h="60px"
+                            src={user.photoURL}
+                            alt="avatar"
+                          />
                         </Flex>
-                        <HStack
-                          alignItems="center"
-                          spacing="8px"
-                          fontSize="12px"
-                        >
-                          <Text
-                            border="1px solid black"
-                            p="4px 8px"
-                            borderRadius="md"
-                          >
-                            エンジニア
+                        <Flex direction="column">
+                          <Flex mb="16px">
+                            <Flex alignItems="center" mr="24px">
+                              <Text
+                                fontSize="20px"
+                                fontWeight="bold"
+                                mr="8px"
+                                onClick={() => router.push(`/users/${user.id}`)}
+                              >
+                                {user.name}
+                              </Text>
+                              <Icon
+                                fontSize="20px"
+                                color="red.500"
+                                as={ImFire}
+                              />
+                            </Flex>
+                            <HStack
+                              alignItems="center"
+                              spacing="8px"
+                              fontSize="12px"
+                            >
+                              <Text
+                                border="1px solid black"
+                                p="4px 8px"
+                                borderRadius="md"
+                              >
+                                エンジニア
+                              </Text>
+                              <Text
+                                border="1px solid black"
+                                p="4px 8px"
+                                borderRadius="md"
+                              >
+                                デザイナー
+                              </Text>
+                            </HStack>
+                          </Flex>
+                          <Text mb="16px">
+                            現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
                           </Text>
-                          <Text
-                            border="1px solid black"
-                            p="4px 8px"
-                            borderRadius="md"
-                          >
-                            デザイナー
-                          </Text>
-                        </HStack>
+                          <HStack spacing="8px" fontSize="12px">
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              React
+                            </Text>
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              Rails
+                            </Text>
+                            <Text
+                              borderRadius="full"
+                              p="4px 8px"
+                              border="1px solid black"
+                            >
+                              HTML
+                            </Text>
+                          </HStack>
+                        </Flex>
                       </Flex>
-                      <Text mb="16px">
-                        現在は就職活動のためにポートフォリオ作成をしています！チーム開発の経験を積むためにいろんな開発に携わりたいです！
-                      </Text>
-                      <HStack spacing="8px" fontSize="12px">
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          React
-                        </Text>
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          Rails
-                        </Text>
-                        <Text
-                          borderRadius="full"
-                          p="4px 8px"
-                          border="1px solid black"
-                        >
-                          HTML
-                        </Text>
-                      </HStack>
-                    </Flex>
-                  </Flex>
-                ))}
+                    ))}
+                </>
+              ) : (
+                <Flex>まだ該当するユーザーがいません</Flex>
+              )}
             </Flex>
           </Flex>
         </TabPanel>

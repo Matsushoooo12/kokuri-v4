@@ -1,7 +1,5 @@
 import React from "react";
-import { auth, db, storage } from "../../firebase/config";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { AuthContext } from "../_app";
+import { db, storage } from "../../../firebase/config";
 import Link from "next/link";
 import "draft-js/dist/Draft.css";
 import {
@@ -23,13 +21,14 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
+  Select,
   Spinner,
   Text,
   Textarea,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { FaFileUpload } from "react-icons/fa";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
@@ -52,12 +51,15 @@ import {
 import dynamic from "next/dynamic";
 import { convertFromRaw, convertToRaw, EditorState, RichUtils } from "draft-js";
 import { RiParagraph } from "react-icons/ri";
-import { PROJECT_TAGS } from "../../components/Tag/projectTag";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import dayjs from "dayjs";
+import { AuthContext } from "../../_app";
+import { PROJECT_TAGS } from "../../../components/Tag/projectTag";
+import { useDocumentData } from "react-firebase-hooks/firestore";
 
-const Editor = dynamic(import("../../components/Editor/index"), { ssr: false });
+const Editor = dynamic(import("../../../components/Editor/index"), {
+  ssr: false,
+});
 
 const initData = convertFromRaw({
   entityMap: {},
@@ -274,13 +276,17 @@ const KeyCodes = {
 
 const delimiters = [KeyCodes.comma, KeyCodes.enter];
 
-const CreateProject = () => {
-  const [user] = useAuthState(auth);
+const CreateWorks = () => {
   const router = useRouter();
+  const { id } = router.query;
+  const [user] = useDocumentData(doc(db, "users", id));
   const [loading, setLoading] = React.useState(true);
   const [editorState, setEditorState] = React.useState(initState);
   const [paragraphOpen, setParagraphOpen] = React.useState(true);
   const [focus, setFocus] = React.useState(false);
+  const [date, setDate] = React.useState("");
+  const [organization, setOrganization] = React.useState("1");
+  const [link, setLink] = React.useState("");
   const [tags, setTags] = React.useState([]);
   const [roles, setRoles] = React.useState([]);
   const [h1Open, setH1Open] = React.useState(false);
@@ -297,17 +303,6 @@ const CreateProject = () => {
   const previewRef = React.useRef(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  // if (
-  //   window.location.href ===
-  //   `${process.env.NEXT_PUBLIC_ROOT_DOMAIN}projects/new`
-  // ) {
-  //   //画面遷移しようとする前に確認ダイアログを出す.
-  //   window.onbeforeunload = function () {
-  //     //Chromeでは動かない.デフォルトの文言が表示される.
-  //     return "編集中です。本当に他のページに移動しますか?";
-  //   };
-  // }
 
   const onClickThumbnailPreview = () => {
     if (previewRef.current) {
@@ -487,46 +482,50 @@ const CreateProject = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const uploadProjectThumbnail = uploadBytesResumable(
-      ref(storage, `projects/${thumbnail.name}`),
+    const uploadWorksThumbnail = uploadBytesResumable(
+      ref(storage, `works/${thumbnail.name}`),
       thumbnail
     );
-    uploadProjectThumbnail.on(
+    uploadWorksThumbnail.on(
       "state_changed",
       () => {},
       (err) => {
         alert(err.message);
       },
       async () => {
-        await getDownloadURL(ref(storage, `projects/${thumbnail.name}`)).then(
+        await getDownloadURL(ref(storage, `works/${thumbnail.name}`)).then(
           async (url) => {
             try {
-              await addDoc(collection(db, "projects"), {
+              await addDoc(collection(db, "works"), {
                 title: title,
-                likeUsers: [],
                 text: JSON.stringify(
                   convertToRaw(editorState.getCurrentContent())
                 ),
                 summary: summary,
                 user: {
-                  uid: user.uid,
-                  name: user.displayName,
+                  uid: id,
+                  name: user.name,
                   avatar: user.photoURL,
                 },
-                members: [user.uid],
+                date: date,
+                organization: organization,
+                link: link,
+                members: [id],
                 tags: tags,
                 roles: roles,
                 thumbnail: url,
-                createdAt: dayjs().format("YYYY/MM/DD"),
+                timestamp: serverTimestamp(),
               }).then(() => {
-                router.push("/");
+                router.push(`/users/${id}`);
               });
             } catch (e) {
               console.log(e);
             }
             setTitle("");
             setSummary("");
+            setDate("");
             setThubmnail(null);
+            setPreview("");
           }
         );
       }
@@ -608,6 +607,8 @@ const CreateProject = () => {
     );
   }
 
+  console.log("organization", organization);
+
   return (
     <Flex
       w="100%"
@@ -622,7 +623,7 @@ const CreateProject = () => {
         {currentUser ? (
           <>
             <Heading fontSize="24px" mb="64px">
-              プロジェクトを作成しよう
+              作品を投稿しよう
             </Heading>
             <InputGroup as="form" w="100%">
               <Flex direction="column" w="100%">
@@ -637,7 +638,7 @@ const CreateProject = () => {
                     _focus={handleEditorUnFocus}
                     w="700px"
                     type="text"
-                    placeholder="作りたいものが表現できるタイトルを付けてみましょう"
+                    placeholder="投稿したい作品のタイトルを書いてください"
                     borderRadius="xl"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -658,7 +659,7 @@ const CreateProject = () => {
                     onChange={(e) => setSummary(e.target.value)}
                     w="700px"
                     type="text"
-                    placeholder="３行程度で作りたいものが伝わる概要を書いてみましょう"
+                    placeholder="３行程度で作品が伝わる概要を書いてみましょう"
                     borderRadius="xl"
                   />
                 </Flex>
@@ -720,6 +721,64 @@ const CreateProject = () => {
                     name="image"
                     id="image"
                     ref={previewRef}
+                  />
+                </Flex>
+                <Divider mt="32px" />
+                <Flex w="100%" justifyContent="space-between" mt="32px">
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      組織
+                    </Text>
+                    <Badge colorScheme="red">必須</Badge>
+                  </Flex>
+                  {/* <Input
+                    type="text"
+                    value={summary}
+                    onChange={(e) => setSummary(e.target.value)}
+                    w="700px"
+                    borderRadius="xl"
+                  /> */}
+                  <Select
+                    placeholder="作成した組織を選んで"
+                    w="700px"
+                    borderRadius="xl"
+                    value={organization}
+                    onChange={(e) => setOrganization(e.target.value)}
+                  >
+                    <option value="1">個人</option>
+                    <option value="2">組織</option>
+                  </Select>
+                </Flex>
+                <Divider mt="32px" />
+                <Flex w="100%" justifyContent="space-between" mt="32px">
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      作成日
+                    </Text>
+                    <Badge colorScheme="red">必須</Badge>
+                  </Flex>
+                  <Input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    w="700px"
+                    borderRadius="xl"
+                  />
+                </Flex>
+                <Divider mt="32px" />
+                <Flex w="100%" justifyContent="space-between" mt="32px">
+                  <Flex w="200px" alignItems="center">
+                    <Text fontWeight="bold" fontSize="16px" mr="8px">
+                      リンク
+                    </Text>
+                    <Badge colorScheme="red">必須</Badge>
+                  </Flex>
+                  <Input
+                    type="text"
+                    value={link}
+                    onChange={(e) => setLink(e.target.value)}
+                    w="700px"
+                    borderRadius="xl"
                   />
                 </Flex>
                 <Divider my="32px" />
@@ -1063,4 +1122,4 @@ const CreateProject = () => {
   );
 };
 
-export default CreateProject;
+export default CreateWorks;

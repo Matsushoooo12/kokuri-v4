@@ -26,7 +26,7 @@ const Group = () => {
           pt="32px"
           justifyContent="flex-start"
         >
-          <Tab>プロジェクト詳細</Tab>
+          <Tab>ドキュメント</Tab>
           <Tab>グループチャット</Tab>
           <Tab>進捗状況</Tab>
         </TabList>

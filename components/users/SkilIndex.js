@@ -1,11 +1,14 @@
-import { Flex, Image, Text, Tooltip } from "@chakra-ui/react";
+import { Center, Flex, Icon, Image, Text, Tooltip } from "@chakra-ui/react";
 import React from "react";
 import { Doughnut } from "react-chartjs-2";
+import { AiOutlinePlus } from "react-icons/ai";
 
-const SkilIndex = () => {
+const SkilIndex = (props) => {
+  const { currentUser, id, onOpen, skils } = props;
   // doughnut chart
-  const percentage1 = 75;
   const backgroundColor = "#319795";
+
+  const percentage1 = 25;
 
   const data1 = {
     datasets: [
@@ -34,11 +37,9 @@ const SkilIndex = () => {
         cutout: "80%",
       },
     ],
-    labels: ["React"],
   };
 
-  const percentage3 = 25;
-
+  const percentage3 = 75;
   const data3 = {
     datasets: [
       {
@@ -50,7 +51,44 @@ const SkilIndex = () => {
         cutout: "80%",
       },
     ],
-    labels: ["AWS"],
+  };
+
+  const percentage4 = 100;
+  const data4 = {
+    datasets: [
+      {
+        label: "My First Dataset",
+        data: [percentage4, 100 - percentage4],
+        backgroundColor: [backgroundColor, "white"],
+        borderColor: "white",
+        hoverOffset: 0,
+        cutout: "80%",
+      },
+    ],
+  };
+
+  const skilChartDisplay = (level) => {
+    if (level === "1") {
+      return {
+        data: data1,
+        lavel: "初心者",
+      };
+    } else if (level === "2") {
+      return {
+        data: data2,
+        lavel: "中級者",
+      };
+    } else if (level === "3") {
+      return {
+        data: data3,
+        lavel: "上級者",
+      };
+    } else if (level === "4") {
+      return {
+        data: data4,
+        lavel: "達人",
+      };
+    }
   };
 
   const omittedContent = (string) => {
@@ -67,313 +105,103 @@ const SkilIndex = () => {
   };
   return (
     <>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="上級者" placement="right" bg="red.500">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/ruby.png"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data1} />
-          </Flex>
-        </Tooltip>
-        <Tooltip hasArrow label="Ruby on Rails" placement="bottom" bg="red.500">
-          <Text
-            color="teal.500"
-            fontWeight="bold"
-            fontSize="20px"
-            wordBreak="break-all"
-            overflowX="scroll"
-            className="scroll-off"
-            w="100%"
+      {/* plus */}
+      {currentUser?.uid === id && (
+        <Center
+          mr="16px"
+          mb="16px"
+          w="140px"
+          h="176px"
+          // h="100%"
+          // bg="gray.300"
+          bg="white"
+          p="8px"
+        >
+          <Center
+            onClick={onOpen}
+            w="100px"
+            h="100px"
+            bg="gray.100"
+            borderRadius="full"
+            cursor="pointer"
           >
-            {omittedContent("Ruby on Rails")}
-          </Text>
-        </Tooltip>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="中級者" placement="right" bg="blue.200">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/react.png"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data2} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          React
-        </Text>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="初級者" placement="right" bg="#FF9900">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/aws.png"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data3} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          AWS
-        </Text>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="中級者" placement="right" bg="#008CCA">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/photoshop_gif.gif"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data2} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          Photoshop
-        </Text>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="上級者" placement="right" bg="#D43505">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/illustrator_gif.gif"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data1} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          Illustrator
-        </Text>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="上級者" placement="right" bg="red.500">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/ruby.png"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data1} />
-          </Flex>
-        </Tooltip>
-        <Tooltip hasArrow label="Ruby on Rails" placement="bottom" bg="red.500">
-          <Text
-            color="teal.500"
-            fontWeight="bold"
-            fontSize="20px"
-            wordBreak="break-all"
-            overflowX="scroll"
-            w="100%"
+            <Icon fontSize="40px" as={AiOutlinePlus} />
+          </Center>
+        </Center>
+      )}
+      {currentUser?.uid !== id && (
+        <>
+          {!skils && <Flex alignSelf="flex-start">まだスキルはありません</Flex>}
+        </>
+      )}
+      {skils?.map((s) => (
+        <Flex
+          key={Math.random()}
+          mr="16px"
+          mb="16px"
+          w="140px"
+          h="176px"
+          bg="white"
+          p="8px"
+          direction="column"
+          alignItems="center"
+        >
+          <Tooltip
+            hasArrow
+            label={skilChartDisplay(s.level).lavel}
+            placement="right"
+            bg="teal.500"
           >
-            {omittedContent("Ruby on Rails")}
-          </Text>
-        </Tooltip>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="中級者" placement="right" bg="blue.200">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/react.png"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data2} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          React
-        </Text>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="初級者" placement="right" bg="#FF9900">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/aws.png"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data3} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          AWS
-        </Text>
-      </Flex>
-      <Flex
-        mr="16px"
-        mb="16px"
-        w="140px"
-        h="176px"
-        // h="100%"
-        // bg="gray.300"
-        bg="white"
-        p="8px"
-        direction="column"
-        alignItems="center"
-      >
-        <Tooltip hasArrow label="中級者" placement="right" bg="#008CCA">
-          <Flex w="100%" position="relative" mb="4px">
-            <Image
-              position="absolute"
-              top="0"
-              bottom="0"
-              left="0"
-              right="0"
-              margin="auto"
-              src="/photoshop_gif.gif"
-              alt=""
-              w="56px"
-            />
-            <Doughnut width="120px" height="120px" data={data2} />
-          </Flex>
-        </Tooltip>
-        <Text color="teal.500" fontWeight="bold" fontSize="20px">
-          Photoshop
-        </Text>
-      </Flex>
+            <Flex w="100%" position="relative" mb="4px">
+              <Image
+                position="absolute"
+                top="0"
+                bottom="0"
+                left="0"
+                right="0"
+                margin="auto"
+                src={s.image}
+                alt=""
+                w="56px"
+              />
+              <Doughnut
+                width="120px"
+                height="120px"
+                data={skilChartDisplay(s.level).data}
+              />
+            </Flex>
+          </Tooltip>
+          {s.title.length > 10 ? (
+            <Tooltip hasArrow label={s.title} placement="bottom" bg="teal.500">
+              <Text
+                color="teal.500"
+                fontWeight="bold"
+                fontSize="20px"
+                wordBreak="break-all"
+                overflowX="scroll"
+                className="scroll-off"
+                w="100%"
+                textAlign="center"
+              >
+                {omittedContent(s.title)}
+              </Text>
+            </Tooltip>
+          ) : (
+            <Text
+              color="teal.500"
+              fontWeight="bold"
+              fontSize="20px"
+              wordBreak="break-all"
+              overflowX="scroll"
+              className="scroll-off"
+              w="100%"
+              textAlign="center"
+            >
+              {s.title}
+            </Text>
+          )}
+        </Flex>
+      ))}
     </>
   );
 };

@@ -1,5 +1,16 @@
 import React from "react";
-import { Avatar, Flex, Heading, Input, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Flex,
+  Heading,
+  Input,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
 import { collection, orderBy, query } from "firebase/firestore";
 import {
   useCollection,
@@ -90,10 +101,23 @@ const MessageListBar = () => {
       >
         Messages
       </Heading>
-      <Input placeholder="ユーザーを検索" w="260px" mb="24px" />
-      <Flex direction="column" w="100%">
-        {roomList()}
-      </Flex>
+      <Tabs w="100%" colorScheme="teal" variant="soft-rounded">
+        <TabList justifyContent="center">
+          <Tab>マッチング</Tab>
+          <Tab>参加申請</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <Input placeholder="ユーザーを検索" mb="24px" />
+            <Flex direction="column" w="100%">
+              {roomList()}
+            </Flex>
+          </TabPanel>
+          <TabPanel>
+            <p>two!</p>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Flex>
   );
 };
